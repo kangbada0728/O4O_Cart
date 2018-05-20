@@ -1,10 +1,32 @@
+'''from picamera import Picamera
+from time import sleep
 import requests
-url='http://127.0.0.1:8000/'
+import os
+
+url='http://127.0.0.1:8000/upload'
+
+camera = PiCamera()
+camera.start_preview()
+i=1
+while(True):
+    sleep(5)
+    camera.capture('/home/pi/image%s.jpg'%i)
+
+    files={'content':open('image%s.jpg' % i,'rb')}
+    r=requests.post(url,files=files)
+    os.remove('image%s.jpg' % i)
+    a = r.content
+    print(a)
+
+    i=i+1
+    if i==10:
+        i=1
+camera.stop_preview()'''
+
+import requests
+url='http://127.0.0.1:8000/upload'
 files={'content': open('as.jpg','rb')}
 r=requests.post(url,files=files)
 a= r.content
 print(a)
 
-
-#라즈베리카메라에서 사진을 5초 단위로 찍고 이 사진을 open으로 연다.(이것에 대한 프로그램 만들어야함)
-#사진이 10개 정도 쌓이면 자동 삭제.

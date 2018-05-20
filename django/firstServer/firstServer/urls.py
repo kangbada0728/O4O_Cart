@@ -20,7 +20,7 @@ urlpatterns = [
     #path('admin/', admin.site.urls),
 
     url(r'^',include('raspberry.urls')),
-
+    url(r'^',include('android.urls')),
     # 아무것도 url을 입력하지 않았을 때, raspberry의 views의 index 메소드를 실행해라
     url(r'^admin/',admin.site.urls),
 ]
