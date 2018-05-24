@@ -25,8 +25,8 @@ SECRET_KEY = '5c3*c53kjsliccownk1x2if^6ez(%c39!mnm!lt6g+6+(_295e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = '*'
 
+ALLOWED_HOSTS = '*'
 
 # Application definition
 
@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'raspberry'
+    'raspberry',
+    'android'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
