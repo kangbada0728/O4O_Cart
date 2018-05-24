@@ -26,16 +26,9 @@ public class Menu extends AppCompatActivity
         Intent intent = new Intent(Menu.this, Compare.class);
         startActivity(intent);
     }
-    /*public void onClickCoupon(View view)
+    public void onClickCoupon(View view)
     {
         Intent intent = new Intent( Menu.this, Coupon.class);
-        // intent 에 ID 담기
         startActivity( intent );
     }
-    public void onClickAd(View view )
-    {
-        // 서버에서 광고주소를 가져온다.
-        Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( "https://www.youtube.com/watch?v=Pl20ft_Pvgs") );
-        startActivity( intent );
-    }*/
 }

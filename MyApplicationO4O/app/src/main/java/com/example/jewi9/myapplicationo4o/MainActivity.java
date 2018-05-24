@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -20,7 +22,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 public class MainActivity extends AppCompatActivity {
 
     private EditText id;
@@ -30,13 +31,16 @@ public class MainActivity extends AppCompatActivity {
     private String pw_string;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        id = findViewById( R.id.id );
-        pw = findViewById( R.id.PW );
+        FirebaseMessaging.getInstance().subscribeToTopic("notice");
+
+        id = (EditText) findViewById( R.id.id );
+        pw = (EditText) findViewById( R.id.PW );
 
 
         Button btn_login = (Button) findViewById(R.id.login);
@@ -58,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
                         try {
                             jsonObject.accumulate("id",id_string);
-                            //Log.i("id!!!!!!!", String.valueOf(id_string));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
