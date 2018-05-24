@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+    <h2>카트 추가</h2>
+    <form method="POST" name="cart_add" action="/mart/cart_add/">
+
+        <table>
+            {{ form.as_table }}
+        </table>
+
+        <input type="submit" name="submit" value="제출">
+        {% csrf_token %}
+    </form>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ title }} | {{ site_title|default:_('Django site admin') }}
+{% endblock %}
+
+{% block branding %}
+    <h1 id="test11"><a href="{% url 'admin:index' %}">{{ site_header|default:_('test12') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+    <div id="gnb">
+        <div id="gnb-app-list">
+            <ul class="drop-down-menu">
+                {% for menu in gnb_menus %}
+                    <li>
+                        <a {%  if menu.url %}href="{{ menu.url }}"{% endif %}>{{ menu.name }}</a>
+                        <ul>
+                            {%  for sub_menu in menu.sub_menus %}
+                                <li><a href="{{ sub_menu.url }}">{{ sub_menu.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
