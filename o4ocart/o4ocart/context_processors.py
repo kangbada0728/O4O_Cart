@@ -13,7 +13,7 @@ def gnb_menus(request):
             'name': '상품',
             'sub_menus': [
                 {'name': '종류', 'url': '/admin/cart/item_sort_info/'},
-                {'name': '상품정보', 'url': '/admin/cart/items/'},
+                {'name': '상품', 'url': '/admin/cart/items/'},
                 {'name': '재고', 'url': '/admin/cart/item_info/'},
             ]
         },

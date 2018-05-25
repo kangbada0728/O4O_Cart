@@ -31,8 +31,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'jet.dashboard',
-    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,10 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cart.apps.CartConfig',
-    'fcm_django',
     'raspberry',
-    'draw',
-    'android'
+    'android',
+	'draw'
 ]
 
 MIDDLEWARE = [
@@ -126,15 +123,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-'''
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'assets'),
-)
-'''
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-FCM_DJANGO_SETTINGS = {
-    'FCM_SERVER_KEY': 'api',
-    'ONE_DEVICE_PER_USER': False,
-    'DELETE)INACTIVE_DEVICES': False
-}
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+

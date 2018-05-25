@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info
+from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items
 from .models import *
-from fcm_django.models import FCMDevice
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from .forms import AdForm
+from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm
 
 @csrf_exempt
 def user_getinfo(request):
@@ -30,7 +29,7 @@ def user_getinfo(request):
 
 def cart_add(request):
     if request.method == 'POST':
-        form = AdForm(request.POST)
+        form = CartForm(request.POST)
 
         form_num = form.data['num']
 
@@ -69,7 +68,7 @@ def ad_add(request):
 
 def coupon_add(request):
     if request.method == 'POST':
-        form = AdForm(request.POST)
+        form = CouponForm(request.POST)
 
         form_name = form.data['name']
         form_item = form.data['item']
@@ -103,7 +102,7 @@ def coupon_add(request):
 
 def camera_add(request):
     if request.method == 'POST':
-        form = AdForm(request.POST)
+        form = CameraForm(request.POST)
 
         form_num = form.data['num']
 
@@ -112,7 +111,7 @@ def camera_add(request):
         if result_num <= 0:
             return redirect('/admin/cart/camera_info/')
 
-        total_num = Camera_Info.objects.count();
+        total_num = Camera_Info.objects.count()
 
         i = 0
         while i < result_num:
@@ -122,29 +121,51 @@ def camera_add(request):
 
     return redirect('/admin/cart/camera_info/')
 
-'''
-def admin_login(request):
-    if request.method == ‘POST’:
-        form = Admin_Info_Form(request.POST)
 
-        if Admin_Info.objects.filter(id=form.data[‘id’]).exists():
-            real_pwd = Admin_Info.objects.get(id=form.data[‘id’]).pwd
-            if real_pwd == form.data[‘pwd’]:
-                form_cart = Admin_Cart_Info_Form()
+def item_add(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST)
 
-                return render(request, ‘admin_dashboard.html’, {‘form_cart’: form_cart, })
-            else:
-                return redirect(‘/mart/admin/‘)
-        else:
-            return redirect(‘/mart/admin/‘)
+        form_item = form.data['item']
+        form_inbound_date = form.data['inbound_date']
+        form_expire_date = form.data['expire_date']
+        form_inventory = form.data['num']
 
-    else:
-        form2 = Admin_Info_Form()
+        result_item = Items.objects.get(name=form_item)
+        result_inbound_date = form_inbound_date
+        result_expire_date = form_expire_date
+        result_inventory = int(form_inventory)
 
-    return render(request, ‘admin_login.html’, {‘form’: form2})
-'''
-'''
-        temp1 = request.POST['select_item']
-        # temp2 = request.POST['select_camera']
-        # temp3 = request.POST.get("ad_links")
-'''
+        if result_inventory <= 0:
+            return redirect('/admin/cart/item_info/')
+
+        total_num = Items.objects.get(name=result_item.name).inventory
+
+        Items.objects.filter(name=result_item).update(inventory=total_num+result_inventory)
+
+        i = 0
+        while i < result_inventory:
+            serial = User.objects.make_random_password(length=9, allowed_chars='1234567890')
+            data = Item_Info(serial_num=serial, item=result_item, inbound_date=result_inbound_date, expire_date=result_expire_date)
+            data.save()
+            i = i+1
+
+    return redirect('/admin/cart/item_info/')
+
+
+def items_add(request):
+    if request.method == 'POST':
+        form = ItemsForm(request.POST)
+
+        form_name = form.data['name']
+        form_price = form.data['price']
+        form_sort = form.data['sort']
+
+        result_name = form_name
+        result_price = form_price
+        result_sort = Item_Sort_Info.objects.get(sort=form_sort)
+
+        data = Items(name=result_name, price=result_price, sort=result_sort)
+        data.save()
+
+    return redirect('/admin/cart/items/')

@@ -6,12 +6,20 @@ import os
 
 #import os
 import json
+'''
 
-font_order = ImageFont.truetype('C:\\NanumBarunGothicLight.ttf',10)
-font_time = ImageFont.truetype('C:\\NanumBarunGothicLight.ttf',10)
+'''
 #im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
-#path = os.getcwd();
-im = Image.open('C:\\Users\\HG\\django\\django\\firstServer\\managerweb\\map.png').convert("RGBA")
+
+script_path = os.getcwd();
+path= os.path.join(script_path,"draw","sources" ,"martmap_source.png" ).replace('\\', '/')
+font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
+
+
+im = Image.open(path).convert("RGBA")
+font_order = ImageFont.truetype(font_path,10)
+font_time = ImageFont.truetype(font_path,10)
+
 drawT = ImageDraw.Draw(im)
 draw = aggdraw.Draw(im)
 
@@ -51,12 +59,12 @@ def drawTime(_list_xy):
         time_min = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).minute
         time_sec = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).second
         str_time = str(time_hour)+"시 "+str(time_min)+"분 "+str(time_sec)+"초"
-        #print(type(str_time))
-        #draw.line((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"], _list_xy[xy_order+1]["x"],_list_xy[xy_order+1]["y"]),pen)
-        #draw.flush()
+
         drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]),str_xy_order ,fill = (0,0,255), font = font_order)
         drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]-50),str_time ,fill = (0,0,255), font = font_order)
-        #drawT.text((_list_xy[xy_order]["x"]-25,_list_xy[xy_order]["y"]+20),str_time ,fill = (150,0,255), font = font_time)
+
+
+
 def showImage(_list_xy):
     '''
     font_order = ImageFont.truetype('C:\\NanumBarunGothicLight.ttf',20)
@@ -66,25 +74,11 @@ def showImage(_list_xy):
     drawT = ImageDraw.Draw(im)
     draw = aggdraw.Draw(im)
     '''
+
     pen = aggdraw.Pen((190,150,130))
     brush = aggdraw.Brush((190,150,110))
     outline = aggdraw.Pen((190,170,130),5)
 
-    '''
-    for xy_order in range(0, len(_list_xy)-1):
-
-        str_xy_order = str(xy_order)
-        str_time = str(_list_xy[xy_order]["time"])
-        time_hour = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).hour
-        time_min = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).minute
-        time_sec = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).second
-        str_time = str(time_hour)+"시 "+str(time_min)+"분 "+str(time_sec)+"초"
-        print(type(str_time))
-        draw.line((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"], _list_xy[xy_order+1]["x"],_list_xy[xy_order+1]["y"]),pen)
-        draw.flush()
-        #drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]),str_xy_order ,fill = (0,0,255), font = font_order)
-        #drawT.text((_list_xy[xy_order]["x"]-25,_list_xy[xy_order]["y"]+20),str_time ,fill = (150,0,255), font = font_time)
-    '''
 
     for xy_order in range(0, int((len(_list_xy)-1)/3)):
         #ezier = "m 0,0 t"
@@ -97,27 +91,20 @@ def showImage(_list_xy):
             p1 = str(_list_xy[xy_order*3+1]["x"]-p0_x)+","+str(_list_xy[xy_order*3+1]["y"]-p0_y)+","
             p2 = str(_list_xy[xy_order*3+2]["x"]-p0_x)+","+str(_list_xy[xy_order*3+2]["y"]-p0_y)+","
             p3 = str(_list_xy[xy_order*3+3]["x"]-p0_x)+","+str(_list_xy[xy_order*3+3]["y"]-p0_y)
-
             draw.ellipse((p0_x-3,p0_y-3,p0_x+3,p0_y+3),pen)
-            #p4 = str(_list_xy[xy_order*4+3]["x"])+","+str(_list_xy[xy_order*4+3]["y"])
+
         bezier = "m " + p0 +"c "+p1+p2+p3
         print(bezier)
         symbol = aggdraw.Symbol(bezier)
-        #xy = ( _list_xy[xy_order*3]["x"], _list_xy[xy_order*3]["y"])``
         draw.symbol((0,0), symbol, outline)
 
     draw.flush()
     drawTime(_list_xy)
 
     #im.show()
-    #draw.line((100,200, 150, 300), fill=128, width=3)
     im.save('out.png')
 
 def visualize(data_json):
     list_xy = getXY(data_json)
     showImage(list_xy)
-
-'''
-if __name__ == "__main__":
-    visualize(data_json)
-'''
+    print(os.getcwd())

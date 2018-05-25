@@ -25,6 +25,5 @@ urlpatterns = [
     url(r'^',include('android.urls')),
     path('mart/', include('cart.urls')),
     path('admin/', admin.site.urls),
-    path('jet/', include('jet.urls', 'jet')),
-    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
+
 ]

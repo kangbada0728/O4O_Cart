@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Cart_Info, Ad_Info, Coupons_Item, Coupon_Item_Info, Camera_Info
+from .models import Cart_Info, Ad_Info, Coupons_Item, Coupon_Item_Info, Camera_Info, Item_Info, Items
 
 
 class CartForm(ModelForm):
@@ -24,4 +24,16 @@ class CameraForm(ModelForm):
     class Meta:
         model = Camera_Info
         fields = ['num']
+
+
+class ItemsForm(ModelForm):
+    class Meta:
+        model = Items
+        fields = ['name', 'price', 'sort']
+
+
+class ItemForm(ModelForm):
+    class Meta:
+        model = Item_Info
+        fields = ['item', 'inbound_date', 'expire_date', 'num']
 

@@ -50,7 +50,7 @@ class Items(models.Model):
         verbose_name_plural="상품"
         verbose_name="상품"
     name = models.CharField(max_length=15, primary_key=True, default="", null=False, verbose_name='상품명')
-    inventory = models.PositiveSmallIntegerField(null=False, verbose_name='재고')
+    inventory = models.PositiveSmallIntegerField(default=0, null=False, verbose_name='재고')
     price = models.PositiveIntegerField(null=False, verbose_name='가격')
     sort = models.ForeignKey(Item_Sort_Info, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='상품종류')
 
@@ -59,10 +59,11 @@ class Item_Info(models.Model):
     class Meta:
         verbose_name_plural="상품 재고"
         verbose_name="상품 재고"
-    serial_num = models.AutoField(primary_key=True, default=1, verbose_name='일련번호')
+    serial_num = models.PositiveIntegerField(primary_key=True, default=1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='상품')
     inbound_date = models.DateField(verbose_name='입고일', null=False, default=date.today)
     expire_date = models.DateField(verbose_name='유통기한', null=False, default=date.today)
+    num = models.PositiveSmallIntegerField(default=0, null=False, verbose_name='개수')
 
 
 
@@ -129,28 +130,3 @@ class Coupon_Item_Info(models.Model):
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=True, blank=True, verbose_name='소유자')
 
 
-
-'''
-class Coupons_Sort(models.Model):
-    class Meta:
-        verbose_name_plural="상품 종류 쿠폰"
-    name = models.CharField(max_length=15, null=False, primary_key=True, default=0, verbose_name='쿠폰이름')
-    sort = models.ForeignKey(Item_Sort_Info, on_delete=models.CASCADE, null=False, verbose_name='쿠폰이 적용된 상품종류')
-    discount_rate = models.PositiveSmallIntegerField(
-        validators=[
-            MaxValueValidator(100),
-            MinValueValidator(0)
-        ], default=0, null=False, verbose_name='할인률')
-    release_date = models.DateField(default=date.today, null=False, verbose_name='발매일')
-    end_date = models.DateField(default=date.today, null=False, verbose_name='종료일')
-    inventory = models.PositiveSmallIntegerField(null=False, verbose_name='발매개수')
-
-
-class Coupon_Sort_Info(models.Model):
-    class Meta:
-        verbose_name_plural="상품 종류 쿠폰"
-    serial_num = models.AutoField(primary_key=True, default=1, verbose_name='일련번호')
-    coupon_sorts = models.ForeignKey(Coupons_Sort, on_delete=models.CASCADE, null=False, verbose_name='쿠폰이름')
-    coupon_use = models.BooleanField(null=False, default=False, verbose_name='사용여부')
-    customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='소유자')
-'''
