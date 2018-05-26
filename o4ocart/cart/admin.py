@@ -151,9 +151,9 @@ class Coupon_Item_Info_Admin(admin.ModelAdmin):
     search_fields = ('serial_num', 'coupon_item', 'coupon_use', 'customer',)
 
 
-admin.site.site_title = 'test1'
-admin.site.site_header = 'O4O Cart'
-admin.site.index_title = '마트 관리 도구'
+#admin.site.site_title = 'test1'
+#admin.site.site_header = 'O4O Cart'
+#admin.site.index_title = '마트 관리 도구'
 
 
 

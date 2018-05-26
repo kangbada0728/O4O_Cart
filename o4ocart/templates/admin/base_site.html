@@ -8,12 +8,16 @@
 {% endblock %}
 
 {% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dropdown.css" %}" />
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/custom.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dropdown.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom.css' %}" />
 {% endblock %}
 
 {% block branding %}
-    <h1 id="test11"><a href="{% url 'admin:index' %}">{{ site_header|default:_('test12') }}</a></h1>
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <img src="{% static 'admin/extra/cart.png' %}" height="100px" />
+        </a>
+    </h1>
 {% endblock %}
 
 
