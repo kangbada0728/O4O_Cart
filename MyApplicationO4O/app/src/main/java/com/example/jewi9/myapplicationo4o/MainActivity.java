@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.apache.http.client.ClientProtocolException;
@@ -22,15 +23,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText id;
     private EditText pw;
 
-    private String id_string;
+    public String id_string;
     private String pw_string;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseMessaging.getInstance().subscribeToTopic("notice");
+        FirebaseInstanceId.getInstance().getToken();
 
         id = (EditText) findViewById( R.id.id );
         pw = (EditText) findViewById( R.id.PW );
-
 
         Button btn_login = (Button) findViewById(R.id.login);
         btn_login.setOnClickListener(new View.OnClickListener(){
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
                 class BtnAsyncTask extends AsyncTask{
                     String result="";
-                    String url = "http://192.168.23.74:8000/login";
+                    String url = "http://192.168.1.150:8000/login";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {

@@ -1,6 +1,7 @@
 from pyfcm import FCMNotification
 
-API_KEY = "AAAAgOST7Pg:APA91bErWBhskXNrRXZezZ2dO5_KpBrTFbD962vq9yLTNwV-Z-IPGr2e2UMWPTzy2uo7sL0H0aaf8lPTnEPbPf3YZsbT1By1KIIUK94O9qV9Dr2zQuoQ5Ah__ITirE3LItMukwHCE-eS"
+#앱이 깔릴때 API_KEY가 할당된다.
+API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
 
 push_service = FCMNotification(api_key=API_KEY)
 
@@ -10,7 +11,7 @@ push_service = FCMNotification(api_key=API_KEY)
         "url":"myurl"
         }
 '''
-registration_id = "fUSmSPvKozM:APA91bEZYv7T-L1zJqPsdPonx-F9VRVnNDt3LNxF3MVg8g0Th55Mu4miSfWQiobXuZDofrXZTHV2s2-wDUupTvdNBD611dGgjvJ9gdimbliZmaKVp4j6JtW5zIq1FqG5w8AxuBF5VUru"
+registration_id = "dpLpgO-yYmQ:APA91bGdZALuiVNMLBfVkR7fjQjwQnWQlcU0WQK1b0wR9j5lfJvZ0lwS2MBQq7MXLLiQFjrLFGs-5cT9wnB8W73gz9K3iVW_k24E0_FLn025eBXbutk2nH5meU-cKLB8n0vprHUA4v4g"
 message_title = "coupon"
 message_body = "pushNotification"
 

@@ -6,6 +6,7 @@ import json
 
 
 #from serializers import TestSerializer
+#회원가입
 @csrf_exempt
 def regist(request):
     if request.method == 'POST':
@@ -20,6 +21,7 @@ def regist(request):
 
         return HttpResponse(resist_data)
 
+#로그인
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
@@ -28,3 +30,14 @@ def login(request):
 
         print(login_data)
         return HttpResponse(login_data)
+      
+#쿠폰요청
+@csrf_exempt
+def requestCoupon(request):
+    if request.method == 'POST':
+        #디비에 요청!!!
+        token = ((request.body).decode('utf-8'))
+        token = json.loads(token)
+
+        print(token)
+        return HttpResponse(token)

@@ -20,7 +20,7 @@ from django.conf.urls import url
 
 
 urlpatterns = [
-    url(r'^',include('draw.urls')),
+   # url(r'^',include('draw.urls')),
     url(r'^',include('raspberry.urls')),
     url(r'^',include('android.urls')),
     path('mart/', include('cart.urls')),

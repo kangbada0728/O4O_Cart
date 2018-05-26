@@ -62,7 +62,7 @@ public class Register extends AppCompatActivity
 
                 class BtnAsyncTask extends AsyncTask {
                     String result = "";
-                    String url = "http://192.168.23.74:8000/regist";//나중에 원격서버주소로 변경!!!!!!!!!
+                    String url = "http://192.168.1.150:8000/regist";//나중에 원격서버주소로 변경!!!!!!!!!
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -70,7 +70,6 @@ public class Register extends AppCompatActivity
                         JSONObject jsonObject = new JSONObject();
                         try {
                             jsonObject.accumulate("id",id_string);
-                            //Log.i("id!!!!!!!", String.valueOf(id_string));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

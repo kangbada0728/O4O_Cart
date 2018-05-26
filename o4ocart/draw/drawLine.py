@@ -11,7 +11,8 @@ import json
 '''
 #im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
 
-script_path = os.getcwd();
+script_path = os.getcwd()
+print(script_path)
 path= os.path.join(script_path,"draw","sources" ,"martmap_source.png" ).replace('\\', '/')
 font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
 

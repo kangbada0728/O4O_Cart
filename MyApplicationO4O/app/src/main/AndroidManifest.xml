@@ -30,6 +30,11 @@
         </activity>
         <activity android:name=".Register"></activity>
         <activity android:name=".Menu"></activity>
+        <activity android:name=".Push"></activity>
+        <activity android:name=".Coupon"></activity>
+        <activity android:name=".ClickCoupon"></activity>
+
+
 
         <service     android:name=".MyFirebaseMessagingService">
             <intent-filter>
