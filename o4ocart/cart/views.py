@@ -7,25 +7,28 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm
 
+
+
+@csrf_exempt
+def coupon_check(request):
+    if request.method == 'POST':
+        request_data1 = ((request.body).decode('utf-8'))
+        request_data = json.load(request_data1)
+
+
+
+
 @csrf_exempt
 def user_getinfo(request):
     if request.method == 'POST':
-        request_data = ((request.body).decode('utf-8'))
-        request_data = json.loads(request_data)
+        request_data1 = ((request.body).decode('utf-8'))
+        request_data = json.loads(request_data1)
 
         da = Customer_Info(request_data['id'], request_data['pw'], request_data['age'], request_data['sex'])
         da.save()
 
         return HttpResponse(request_data)
 
-    '''
-    if user_sex == 'F':
-        user = Customer_Info(id=user_id, pwd=user_pwd, age=user_age, sex=Sex_Info.objects.get(sex='F'))
-    else:
-        user = Customer_Info(id=user_id, pwd=user_pwd, age=user_age, sex=Sex_Info.objects.get(sex='M'))
-    user.save()
-    return HttpResponse('Customer_info is inserted into DB')
-    '''
 
 def cart_add(request):
     if request.method == 'POST':

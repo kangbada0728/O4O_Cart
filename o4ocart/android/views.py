@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 
+'''
 #from serializers import TestSerializer
 @csrf_exempt
 def regist(request):
@@ -28,3 +29,7 @@ def login(request):
 
         print(login_data)
         return HttpResponse(login_data)
+
+'''
+
+
