@@ -1,27 +1,44 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items
+from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info
 from .models import *
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm
+from pyfcm import FCMNotification
 
-
+#API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
 
 @csrf_exempt
 def coupon_check(request):
     if request.method == 'POST':
-        request_data1 = ((request.body).decode('utf-8'))
-        request_data = json.load(request_data1)
+        request_data1 = (request.body).decode('utf-8')
+        request_data = json.loads(request_data1)
 
 
+        id = request_data['id']
+
+        coupons = Coupon_Item_Info.objects.filter(customer=id, coupon_use=False).all()
+        test1=[]
+
+
+        for check in coupons:
+            data=[]
+            data.append(check.serial_num)
+            name = check.coupon_item.item.name
+            data.append(name)
+            test1.append(data)
+
+        d1=json.dumps(test1)
+        json.loads(d1)
+        return HttpResponse(d1)
 
 
 @csrf_exempt
 def user_getinfo(request):
     if request.method == 'POST':
-        request_data1 = ((request.body).decode('utf-8'))
+        request_data1 = (request.body).decode('utf-8')
         request_data = json.loads(request_data1)
 
         da = Customer_Info(request_data['id'], request_data['pw'], request_data['age'], request_data['sex'])
