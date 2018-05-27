@@ -1,6 +1,7 @@
 from datetime import date
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -64,7 +65,7 @@ class Item_Info(models.Model):
     inbound_date = models.DateField(verbose_name='입고일', null=False, default=date.today)
     expire_date = models.DateField(verbose_name='유통기한', null=False, default=date.today)
     num = models.PositiveSmallIntegerField(default=0, null=False, verbose_name='개수')
-
+    pur_use = models.BooleanField(null=False, default=False, verbose_name='구매여부')
 
 
 class Camera_Info(models.Model):
@@ -78,19 +79,19 @@ class Pur_History(models.Model):
     class Meta:
         verbose_name_plural="고객 구매정보"
         verbose_name = "고객 구매정보"
-    num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
+    #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
+    time = models.DateTimeField(auto_now_add=True, verbose_name='구매시간', primary_key=True, null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='구매고객')
-    time = models.DateTimeField(auto_now_add=True, verbose_name='구매시간')
-    item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
+    item = models.ForeignKey(Item_Info, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
 
 
 class Mv_History(models.Model):
     class Meta:
         verbose_name_plural="고객 이동정보"
         verbose_name="고객 이동정보"
-    num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
+    #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
+    time = models.DateTimeField(auto_now_add=True, verbose_name='이동한 시간', primary_key=True, null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='이동고객')
-    time = models.DateTimeField(auto_now_add=True, verbose_name='이동한 시간')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
 
 
