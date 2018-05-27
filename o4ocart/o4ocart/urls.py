@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^',include('draw.urls')),
     url(r'^',include('raspberry.urls')),
     url(r'^',include('android.urls')),
-    path('mart/', include('cart.urls')),
+    path('cart/', include('cart.urls')),
     path('admin/', admin.site.urls),
 
 ]

@@ -10,41 +10,101 @@ from pyfcm import FCMNotification
 
 #API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
 
+
+@csrf_exempt
+def user_signup(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        result_id = request_data['id']
+        result_pwd = request_data['pwd']
+        result_age = int(request_data['age'])
+        result_sex = Sex_Info.objects.get(sex=request_data['sex'])
+
+        id_check = Customer_Info.objects.filter(id=result_id).exists()
+
+        if id_check == False:
+            data = Customer_Info(id=result_id, pwd=result_pwd, age=result_age, sex=result_sex)
+            data.save()
+            return HttpResponse('success')
+        else:
+            return HttpResponse('fail')
+
+
+@csrf_exempt
+def user_signin(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        result_id = request_data['id']
+        result_pwd = request_data['pwd']
+
+        real_pwd = Customer_Info.objects.get(id=result_id).pwd
+
+        if real_pwd == result_pwd:
+            return HttpResponse('success')
+        else:
+            return HttpResponse('fail')
+
+
 @csrf_exempt
 def coupon_check(request):
     if request.method == 'POST':
-        request_data1 = (request.body).decode('utf-8')
-        request_data = json.loads(request_data1)
-
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
 
         id = request_data['id']
 
         coupons = Coupon_Item_Info.objects.filter(customer=id, coupon_use=False).all()
-        test1=[]
 
-
+        coupon_arr = []
         for check in coupons:
-            data=[]
+            data = []
+
             data.append(check.serial_num)
+
             name = check.coupon_item.item.name
             data.append(name)
-            test1.append(data)
 
-        d1=json.dumps(test1)
-        json.loads(d1)
-        return HttpResponse(d1)
+            discount = check.coupon_item.discount_rate
+            data.append(discount)
+
+            datetime = check.coupon_item.end_date
+            data.append(datetime)
+
+            coupon_arr.append(data)
+
+        send_json=json.dumps(coupon_arr)
+
+        return HttpResponse(send_json)
 
 
 @csrf_exempt
-def user_getinfo(request):
+def comparing_product(request):
     if request.method == 'POST':
-        request_data1 = (request.body).decode('utf-8')
-        request_data = json.loads(request_data1)
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
 
-        da = Customer_Info(request_data['id'], request_data['pw'], request_data['age'], request_data['sex'])
-        da.save()
+        serial = request_data['serial']
 
-        return HttpResponse(request_data)
+        item_sort = Item_Info.objects.get(serial_num=int(serial)).item.sort
+        sort_items = Items.objects.filter(sort=item_sort).all()
+
+        sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
+
+        items_result = []
+        for check in sorted_items:
+            data = []
+            data.append(check.name)
+            data.append(check.inventory)
+            data.append(check.price)
+            items_result.append(data)
+
+        send_json = json.dumps(items_result)
+
+        return HttpResponse(send_json)
 
 
 def cart_add(request):
@@ -160,8 +220,7 @@ def item_add(request):
             return redirect('/admin/cart/item_info/')
 
         total_num = Items.objects.get(name=result_item.name).inventory
-
-        Items.objects.filter(name=result_item).update(inventory=total_num+result_inventory)
+        Items.objects.filter(name=result_item.name).update(inventory=total_num+result_inventory)
 
         i = 0
         while i < result_inventory:

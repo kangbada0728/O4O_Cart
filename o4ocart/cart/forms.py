@@ -35,5 +35,5 @@ class ItemsForm(ModelForm):
 class ItemForm(ModelForm):
     class Meta:
         model = Item_Info
-        fields = ['item', 'inbound_date', 'expire_date']
+        fields = ['item', 'inbound_date', 'expire_date', 'num']
 

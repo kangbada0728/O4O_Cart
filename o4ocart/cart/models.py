@@ -64,7 +64,7 @@ class Item_Info(models.Model):
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='상품')
     inbound_date = models.DateField(verbose_name='입고일', null=False, default=date.today)
     expire_date = models.DateField(verbose_name='유통기한', null=False, default=date.today)
-    num = models.PositiveSmallIntegerField(default=0, null=False, verbose_name='개수')
+    num = models.PositiveSmallIntegerField(default=0, null=False, verbose_name='입고량')
     pur_use = models.BooleanField(null=False, default=False, verbose_name='구매여부')
 
 
