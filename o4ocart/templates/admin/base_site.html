@@ -8,14 +8,14 @@
 {% endblock %}
 
 {% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dropdown.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dropdown.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/custom.css" %}" />
 {% endblock %}
 
 {% block branding %}
     <h1 id="site-name">
         <a href="{% url 'admin:index' %}">
-            <img src="{% static 'admin/extra/cart.png' %}" height="100px" />
+            <img src="{% static 'admin/extra/cart.png' %}" height="40px" />
         </a>
     </h1>
 {% endblock %}
