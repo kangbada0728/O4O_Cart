@@ -122,7 +122,8 @@ def cart_add(request):
 
         i = 0
         while i < result_num:
-            data = Cart_Info(num=total_num + i + 1)
+            serial = User.objects.make_random_password(length=9, allowed_chars='1234567890')
+            data = Cart_Info(num=total_num + i + 1, serial_num=serial)
             data.save()
             i = i + 1
     return redirect('/admin/cart/cart_info/')

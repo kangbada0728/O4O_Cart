@@ -3,7 +3,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 from django.contrib.auth.models import User
-
+import uuid
 # Create your models here.
 
 class Sex_Info(models.Model):
@@ -34,6 +34,7 @@ class Cart_Info(models.Model):
         verbose_name="카트"
     num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='추가할 카트수')
     #num = models.AutoField(primary_key=True, null=False, default=1, verbose_name='카트번호')
+    serial_num = models.PositiveIntegerField(unique=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
     owner = models.ForeignKey(Customer_Info, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='소유자')
 
 
@@ -60,7 +61,7 @@ class Item_Info(models.Model):
     class Meta:
         verbose_name_plural="상품 재고"
         verbose_name="상품 재고"
-    serial_num = models.PositiveIntegerField(primary_key=True, default=1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
+    serial_num = models.PositiveIntegerField(unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='상품')
     inbound_date = models.DateField(verbose_name='입고일', null=False, default=date.today)
     expire_date = models.DateField(verbose_name='유통기한', null=False, default=date.today)
@@ -125,7 +126,7 @@ class Coupon_Item_Info(models.Model):
     class Meta:
         verbose_name_plural="상품 쿠폰 재고"
         verbose_name="상품 쿠폰 재고"
-    serial_num = models.PositiveIntegerField(primary_key=True, default=1, editable=False, verbose_name='일련번호') # 9자리까지 가능
+    serial_num = models.PositiveIntegerField(unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호') # 9자리까지 가능
     coupon_item = models.ForeignKey(Coupons_Item, on_delete=models.CASCADE, null=False, verbose_name='쿠폰이름')
     coupon_use = models.BooleanField(null=False, default=False, verbose_name='사용여부')
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=True, blank=True, verbose_name='소유자')

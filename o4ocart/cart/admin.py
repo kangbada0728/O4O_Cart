@@ -9,7 +9,7 @@ from .forms import AdForm, CouponForm, CameraForm, CartForm, ItemForm, ItemsForm
 
 
 # Register your models here.
-
+'''
 class Sex_Info_Admin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
@@ -19,7 +19,7 @@ class Sex_Info_Admin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-
+'''
 
 class Customer_info_Admin(admin.ModelAdmin):
     list_per_page = 10
@@ -31,8 +31,8 @@ class Customer_info_Admin(admin.ModelAdmin):
 
 class Cart_info_Admin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ('num', 'owner',)
-    search_fields = ('num', 'owner',)
+    list_display = ('num', 'serial_num', 'owner',)
+    search_fields = ('num', 'serial_num', 'owner',)
     ordering = ('-num',)
 
     def get_urls(self):
@@ -128,11 +128,6 @@ class Pur_History_Admin(admin.ModelAdmin):
     ordering = ('time',)
     readonly_fields = ('customer', 'time', 'item',)
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request):
-        return False
 
 
 class Mv_History_Admin(admin.ModelAdmin):
@@ -142,12 +137,6 @@ class Mv_History_Admin(admin.ModelAdmin):
     search_fields = ('customer', 'time', 'camera_num',)
     ordering = ('time', 'camera_num',)
     readonly_fields = ('customer', 'time', 'camera_num',)
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request):
-        return False
 
 
 
@@ -182,7 +171,7 @@ class Coupon_Item_Info_Admin(admin.ModelAdmin):
 #admin.site.site_header = 'O4O Cart'
 admin.site.index_title = '마트 관리 도구'
 
-admin.site.register(Sex_Info, Sex_Info_Admin)
+admin.site.register(Sex_Info)
 admin.site.register(Customer_Info, Customer_info_Admin)
 admin.site.register(Cart_Info, Cart_info_Admin)
 admin.site.register(Item_Sort_Info, Item_Sort_Info_Admin)
