@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'raspberry',
     'android',
-	'draw'
+	'draw',
 ]
 
 MIDDLEWARE = [

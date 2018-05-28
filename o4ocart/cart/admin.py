@@ -10,6 +10,16 @@ from .forms import AdForm, CouponForm, CameraForm, CartForm, ItemForm, ItemsForm
 
 # Register your models here.
 
+class Sex_Info_Admin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 class Customer_info_Admin(admin.ModelAdmin):
     list_per_page = 10
@@ -74,9 +84,10 @@ class Items_Admin(admin.ModelAdmin):
 
 class Item_Info_Admin(admin.ModelAdmin):
     list_per_page = 100
-    list_display = ('serial_num', 'item', 'inbound_date', 'expire_date',)
-    search_fields = ('serial_num', 'item', 'inbound_date', 'expire_date',)
-    ordering = ('serial_num', 'inbound_date', 'expire_date',)
+    list_display = ('serial_num', 'item', 'inbound_date', 'expire_date', 'pur_use',)
+    search_fields = ('serial_num', 'item', 'inbound_date', 'expire_date', 'pur_use',)
+    ordering = ('serial_num', 'inbound_date', 'expire_date', 'pur_use',)
+    readonly_fields = ('num',)
 
     def get_urls(self):
         urls = super(Item_Info_Admin, self).get_urls()
@@ -112,17 +123,32 @@ class Camera_Info_Admin(admin.ModelAdmin):
 
 class Pur_History_Admin(admin.ModelAdmin):
     list_per_page = 100
-    list_display = ('num', 'customer', 'time', 'item',)
+    list_display = ('customer', 'time', 'item',)
     search_fields = ('customer', 'time', 'item',)
     ordering = ('time',)
+    readonly_fields = ('customer', 'time', 'item',)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
 
 
 class Mv_History_Admin(admin.ModelAdmin):
     list_per_page = 100
-    list_display = ('num', 'customer', 'time', 'camera_num',)
+    list_display = ('customer', 'time', 'camera_num',)
     list_filter = ('camera_num',)
     search_fields = ('customer', 'time', 'camera_num',)
     ordering = ('time', 'camera_num',)
+    readonly_fields = ('customer', 'time', 'camera_num',)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
 
 
 class Coupons_Item_Admin(admin.ModelAdmin):
@@ -151,14 +177,12 @@ class Coupon_Item_Info_Admin(admin.ModelAdmin):
     search_fields = ('serial_num', 'coupon_item', 'coupon_use', 'customer',)
 
 
-admin.site.site_title = 'test1'
-admin.site.site_header = 'O4O Cart'
+
+#admin.site.site_title = 'test1'
+#admin.site.site_header = 'O4O Cart'
 admin.site.index_title = '마트 관리 도구'
 
-
-
-
-admin.site.register(Sex_Info)
+admin.site.register(Sex_Info, Sex_Info_Admin)
 admin.site.register(Customer_Info, Customer_info_Admin)
 admin.site.register(Cart_Info, Cart_info_Admin)
 admin.site.register(Item_Sort_Info, Item_Sort_Info_Admin)

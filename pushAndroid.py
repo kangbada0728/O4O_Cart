@@ -10,7 +10,7 @@ push_service = FCMNotification(api_key=API_KEY)
         "url":"myurl"
         }
 '''
-registration_id = "fUSmSPvKozM:APA91bEZYv7T-L1zJqPsdPonx-F9VRVnNDt3LNxF3MVg8g0Th55Mu4miSfWQiobXuZDofrXZTHV2s2-wDUupTvdNBD611dGgjvJ9gdimbliZmaKVp4j6JtW5zIq1FqG5w8AxuBF5VUru"
+registration_id = "dIxEhXavQSg:APA91bHQHgLRsUnrkswmWS051h_ggpvHTbQAYVshtlWvOiozn2WZZCynqHvNlc5877thiO-Oc8VHqW1uIUmMMJaV0mzaeTRL2UNRxNoP9EtnZxIV2EWtKMdH_Wc3ZKMMsbRW50zCRRoU"
 message_title = "coupon"
 message_body = "pushNotification"
 

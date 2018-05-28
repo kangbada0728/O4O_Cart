@@ -13,7 +13,11 @@
 {% endblock %}
 
 {% block branding %}
-    <h1 id="test11"><a href="{% url 'admin:index' %}">{{ site_header|default:_('test12') }}</a></h1>
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <img src="{% static 'admin/extra/cart.png' %}" height="40px" />
+        </a>
+    </h1>
 {% endblock %}
 
 
