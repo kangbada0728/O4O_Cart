@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info
+from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix
 from .models import *
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm
+from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm, MatrixForm
 from pyfcm import FCMNotification
 
 #API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
@@ -71,7 +71,7 @@ def coupon_check(request):
             discount = check.coupon_item.discount_rate
             data.append(discount)
 
-            datetime = check.coupon_item.end_date
+            datetime = str(check.coupon_item.end_date)
             data.append(datetime)
 
             coupon_arr.append(data)
@@ -105,6 +105,43 @@ def comparing_product(request):
         send_json = json.dumps(items_result)
 
         return HttpResponse(send_json)
+
+
+@csrf_exempt
+def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        serial = int(request_data['serial'])
+        camera_num = int(request_data['camera'])
+        coor_x = str(request_data['x'])
+        coor_y = str(request_data['y'])
+
+        cart_customer = Cart_Info.objects.get(serial_num=serial).owner
+        camera = Camera_Info.objects.get(num=camera_num)
+
+        data = Mv_History(customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
+        data.save()
+
+'''
+        item_sort = Item_Info.objects.get(serial_num=int(serial)).item.sort
+        sort_items = Items.objects.filter(sort=item_sort).all()
+
+        sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
+
+        items_result = []
+        for check in sorted_items:
+            data = []
+            data.append(check.name)
+            data.append(check.inventory)
+            data.append(check.price)
+            items_result.append(data)
+
+        send_json = json.dumps(items_result)
+
+        return HttpResponse(send_json)
+'''
 
 
 def cart_add(request):
@@ -249,3 +286,18 @@ def items_add(request):
         data.save()
 
     return redirect('/admin/cart/items/')
+
+def matrix_add(request):
+    if request.method == 'POST':
+        form = MatrixForm(request.POST)
+
+        form_name = str(form.data['name'])
+        form_start_x = int(form.data['start_x'])
+        form_start_y = int(form.data['start_y'])
+        form_end_x = int(form.data['end_x'])
+        form_end_y = int(form.data['end_y'])
+
+        data = Matrix(name=form_name, start_x=form_start_x, start_y=form_start_y, end_x=form_end_x, end_y=form_end_y)
+        data.save()
+
+    return redirect('/admin/cart/matrix/')

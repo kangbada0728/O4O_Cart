@@ -23,7 +23,13 @@ def gnb_menus(request):
                 {'name': '광고', 'url': '/admin/cart/ad_info/'},
                 {'name': '상품쿠폰', 'url': '/admin/cart/coupons_item/'},
                 {'name': '상품쿠폰재고', 'url': '/admin/cart/coupon_item_info/'},
+            ]
+        },
+        {
+            'name': '기타',
+            'sub_menus': [
                 {'name': '카메라', 'url': '/admin/cart/camera_info/'},
+                {'name': '마트구획', 'url': '/admin/cart/matrix/'},
             ]
         }
     ]
