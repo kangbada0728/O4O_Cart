@@ -4,5 +4,6 @@ from . import views
 urlpatterns = [
     url(r'^regist$', views.regist),
     url(r'^login$',views.login),
-    url(r'^requestCoupon$',views.requestCoupon)
+    url(r'^requestCoupon$',views.requestCoupon),
+    url(r'^compareProduct$',views.compareProduct)
 ] 

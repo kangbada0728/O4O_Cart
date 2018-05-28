@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText id;
     private EditText pw;
 
-    public String id_string;
+    public static String id_string;
     private String pw_string;
 
     @Override
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
                 class BtnAsyncTask extends AsyncTask{
                     String result="";
-                    String url = "http://192.168.1.150:8000/login";
+                    String url = "http://192.168.26.225:8000/login";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -114,5 +114,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent( MainActivity.this, Register.class);
         startActivity( intent );
     }
-
 }

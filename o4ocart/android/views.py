@@ -36,8 +36,18 @@ def login(request):
 def requestCoupon(request):
     if request.method == 'POST':
         #디비에 요청!!!
-        token = ((request.body).decode('utf-8'))
-        token = json.loads(token)
+        coupon = ((request.body).decode('utf-8'))
+        coupon = json.loads(coupon)
 
-        print(token)
-        return HttpResponse(token)
+        print(coupon)
+        return HttpResponse(coupon)
+
+@csrf_exempt
+def compareProduct(request):
+    if request.method == 'POST':
+        #디비에 요청!!!
+        product = ((request.body).decode('utf-8'))
+        product = json.loads(product)
+
+        print(product)
+        return HttpResponse(product)

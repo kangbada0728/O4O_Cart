@@ -28,7 +28,7 @@ public class Coupon extends AppCompatActivity {
         JSONObject coupon1 = new JSONObject();
         JSONObject coupon2 = new JSONObject();
 
-        JSONArray couponArray = new JSONArray();//jsonArray형태로 서버에서 쿠폰정보를 받아올것임.
+        /*JSONArray couponArray = new JSONArray();//jsonArray형태로 서버에서 쿠폰정보를 받아올것임.
         try {
             coupon1.accumulate("name","coupon1");
             coupon1.accumulate("dueDate","2018-5-26");
@@ -42,14 +42,15 @@ public class Coupon extends AppCompatActivity {
             e.printStackTrace();
         }
         couponArray.put(coupon1);
-        couponArray.put(coupon2);
-
-        for(int i=0;i<couponArray.length();i++){
+        couponArray.put(coupon2);*/
+        Menu menu = new Menu();
+        //Menu.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        for(int i=0;i<menu.couponArray.length();i++){
             try {
                  HashMap<String,String> InputData1 = new HashMap<>();
 
-                InputData1.put("name", couponArray.getJSONObject(i).getString("name"));
-                InputData1.put("dueDate",couponArray.getJSONObject(i).getString("dueDate"));
+                InputData1.put("name", menu.couponArray.getJSONObject(i).getString("name"));
+                InputData1.put("dueDate",menu.couponArray.getJSONObject(i).getString("dueDate"));
                 Data.add(InputData1);
 
             } catch (JSONException e) {

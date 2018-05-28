@@ -38,7 +38,7 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
     }
 
     private void sendNotification(String message) {
-        System.out.println("@@@@@@received message : " + message);
+        System.out.println("@@@@@@received message in sendNotification : " + message);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
