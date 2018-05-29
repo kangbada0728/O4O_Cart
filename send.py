@@ -1,32 +1,30 @@
-'''from picamera import Picamera
+from picamera import PiCamera
 from time import sleep
+import time
 import requests
 import os
 
-url='http://127.0.0.1:8000/upload'
-
+url='http://192.168.0.8:8000/upload'
+camNum = '1'
 camera = PiCamera()
+camera.resolution = (1280, 720)
 camera.start_preview()
-i=1
+
 while(True):
-    sleep(5)
-    camera.capture('/home/pi/image%s.jpg'%i)
+	sleep(1)
 
-    files={'content':open('image%s.jpg' % i,'rb')}
-    r=requests.post(url,files=files)
-    os.remove('image%s.jpg' % i)
-    a = r.content
-    print(a)
+	image_time =str(time.time())
+	image_name = image_time+'_' + camNum + '.jpg'
 
-    i=i+1
-    if i==10:
-        i=1
-camera.stop_preview()'''
+	camera.capture('/home/pi/o4ocart/%s'%image_name)
+	#detect.detectQR(image_name)
 
-import requests
-url='http://127.0.0.1:8000/upload'
-files={'content': open('as.jpg','rb')}
-r=requests.post(url,files=files)
-a= r.content
-print(a)
+	files={'content':open('/home/pi/%s' %image_name,'rb')}
+    params = {'image_name': image_name}
+	req=requests.post(url,files=files, params = params)
+	os.remove('/home/pi/%s' %image_name)
 
+	req_result = req.content
+	print(req_result)
+
+camera.stop_preview()

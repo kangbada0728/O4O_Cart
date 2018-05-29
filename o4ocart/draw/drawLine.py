@@ -6,12 +6,12 @@ import os
 
 #import os
 import json
-'''
 
 '''
 #im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
-
-script_path = os.getcwd();
+script_path = os.getcwd()
+#o4ocart 폴더(앱있는곳)
+print(script_path)
 path= os.path.join(script_path,"draw","sources" ,"martmap_source.png" ).replace('\\', '/')
 font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
 
@@ -22,6 +22,23 @@ font_time = ImageFont.truetype(font_path,10)
 
 drawT = ImageDraw.Draw(im)
 draw = aggdraw.Draw(im)
+'''
+
+#im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
+script_path = os.getcwd()
+#o4ocart 폴더(앱있는곳)
+print(script_path)
+path= os.path.join(script_path,"draw","sources" ,"martmap_source.png" ).replace('\\', '/')
+font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
+
+
+im = Image.open(path).convert("RGBA")
+font_order = ImageFont.truetype(font_path,10)
+font_time = ImageFont.truetype(font_path,10)
+
+drawT = ImageDraw.Draw(im)
+draw = aggdraw.Draw(im)
+
 
 def getXY(data_json):
     #time을 timestamp로 정수화하여 표시한다.
