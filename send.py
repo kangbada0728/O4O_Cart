@@ -12,4 +12,3 @@ image_name = '1_1527596108.23.jpg'
 param = {'image_name':image_name}
 r=requests.post(url,files=files,params=param)
 a= r.content
-print(a)
