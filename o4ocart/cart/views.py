@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix
 from .models import *
 import json
+import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm, MatrixForm
@@ -89,7 +90,7 @@ def comparing_product(request):
 
         serial = request_data['serial']
 
-        item_sort = Item_Info.objects.get(serial_num=int(serial)).item.sort
+        item_sort = Item_Info.objects.get(serial_num=serial).item.sort
         sort_items = Items.objects.filter(sort=item_sort).all()
 
         sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
@@ -113,10 +114,10 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        serial = int(request_data['serial'])
+        serial = request_data['serial']
         camera_num = int(request_data['camera'])
-        coor_x = str(request_data['x'])
-        coor_y = str(request_data['y'])
+        coor_x = int(request_data['x'])
+        coor_y = int(request_data['y'])
 
         cart_customer = Cart_Info.objects.get(serial_num=serial).owner
         camera = Camera_Info.objects.get(num=camera_num)
@@ -125,7 +126,7 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
         data.save()
 
 '''
-        item_sort = Item_Info.objects.get(serial_num=int(serial)).item.sort
+        item_sort = Item_Info.objects.get(serial_num=serial).item.sort
         sort_items = Items.objects.filter(sort=item_sort).all()
 
         sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
@@ -159,7 +160,7 @@ def cart_add(request):
 
         i = 0
         while i < result_num:
-            serial = User.objects.make_random_password(length=9, allowed_chars='1234567890')
+            serial = 'cart'+str(total_num+i+1)+str(random.randrange(10000, 100000))
             data = Cart_Info(num=total_num + i + 1, serial_num=serial)
             data.save()
             i = i + 1
@@ -207,7 +208,7 @@ def coupon_add(request):
 
         i = 0
         while i < result_inventory:
-            serial = User.objects.make_random_password(length=9, allowed_chars='1234567890')
+            serial = 'coupon'+result_name+str(i+1)+str(random.randrange(10000, 100000))
             item = Coupons_Item.objects.get(item=result_item)
             use = False
 
@@ -240,6 +241,24 @@ def camera_add(request):
     return redirect('/admin/cart/camera_info/')
 
 
+def items_add(request):
+    if request.method == 'POST':
+        form = ItemsForm(request.POST)
+
+        form_name = form.data['name']
+        form_price = form.data['price']
+        form_sort = form.data['sort']
+
+        result_name = form_name
+        result_price = form_price
+        result_sort = Item_Sort_Info.objects.get(sort=form_sort)
+
+        data = Items(name=result_name, price=result_price, sort=result_sort)
+        data.save()
+
+    return redirect('/admin/cart/items/')
+
+
 def item_add(request):
     if request.method == 'POST':
         form = ItemForm(request.POST)
@@ -262,30 +281,13 @@ def item_add(request):
 
         i = 0
         while i < result_inventory:
-            serial = User.objects.make_random_password(length=9, allowed_chars='1234567890')
+            serial = result_item.name + str(total_num+result_inventory+i+1) + str(random.randrange(10000, 100000))
             data = Item_Info(serial_num=serial, item=result_item, inbound_date=result_inbound_date, expire_date=result_expire_date)
             data.save()
             i = i+1
 
     return redirect('/admin/cart/item_info/')
 
-
-def items_add(request):
-    if request.method == 'POST':
-        form = ItemsForm(request.POST)
-
-        form_name = form.data['name']
-        form_price = form.data['price']
-        form_sort = form.data['sort']
-
-        result_name = form_name
-        result_price = form_price
-        result_sort = Item_Sort_Info.objects.get(sort=form_sort)
-
-        data = Items(name=result_name, price=result_price, sort=result_sort)
-        data.save()
-
-    return redirect('/admin/cart/items/')
 
 def matrix_add(request):
     if request.method == 'POST':
