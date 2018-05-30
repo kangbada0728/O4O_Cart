@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
                 class BtnAsyncTask extends AsyncTask{
                     String result="";
-                    String url = "http://192.168.26.225:8000/login";
+                    String url = "http://192.168.31.67:8000/cart/user_signin/";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         try {
-                            jsonObject.accumulate("pw",pw_string);
+                            jsonObject.accumulate("pwd",pw_string);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -79,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        /*if(result.equals("success")){
+                            Intent intent = new Intent(MainActivity.this,Menu.class);
+                            startActivity(intent);//메뉴로 화면 전환!!
+                        }*/
+
                         return null;
                     }
                     public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
@@ -98,11 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
-
-                //if(서버에 아디이 비번 보내서 일치하면 )
                 Intent intent = new Intent(MainActivity.this,Menu.class);
                 startActivity(intent);//메뉴로 화면 전환!!
-                //else{다시 입력}
             }
         });
     }

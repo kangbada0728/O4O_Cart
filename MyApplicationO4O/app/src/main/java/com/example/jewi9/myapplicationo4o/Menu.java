@@ -29,8 +29,9 @@ import java.io.UnsupportedEncodingException;
 
 public class Menu extends AppCompatActivity
 {
-    JSONArray couponArray = null;
+    public static JSONObject coupon_jsonobject;
     String barcode=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +56,7 @@ public class Menu extends AppCompatActivity
         {
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
             //String re = scanResult.getContents();
-           // barcode = re;
+            // barcode = re;
             barcode = scanResult.getContents();
             Log.d("onActivityResult@@@@@@", "onActivityResult@@@@@@: " + barcode);
             Toast.makeText(this, barcode, Toast.LENGTH_LONG).show();
@@ -114,8 +115,16 @@ public class Menu extends AppCompatActivity
         //서버에 요청을 보낸다.(보낼값: token, id)
         class BtnAsyncTask extends AsyncTask {
             String result="";
-            //String url = "http://192.168.26.225:8000/requestCoupon";//나중에 원격서버주소로 변경!!!!!!!!!
-            String url = "http://192.168.26.225:8000/cart/coupon_check/";
+            //String url = "http://192.168.31.67:8000/requestCoupon";//나중에 원격서버주소로 변경!!!!!!!!!
+            String url = "http://192.168.31.67:8000/cart/coupon_check/";
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                Intent intent = new Intent( Menu.this, Coupon.class);
+                startActivity( intent );
+            }
+
             @Override
             protected Object doInBackground(Object[] objects) {
                 String json="";
@@ -138,36 +147,38 @@ public class Menu extends AppCompatActivity
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                Log.d("result@@@@@@", "result1@@@@@@: " + result);
                 try {
-                    couponArray = new JSONArray(result);
+                    coupon_jsonobject = new JSONObject(result);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d("result@@@@@@", "result1@@@@@@: " + couponArray);
+                Log.d("couponarray@@@@@@", "couponarray@@@@@@: " + coupon_jsonobject);
+
+
                 return null;
             }
+
             public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
-                     String msg = null; //http 연결 인증
-                     DefaultHttpClient client = new DefaultHttpClient();
-                     HttpPost httppost = new HttpPost(host);
+                String msg = null; //http 연결 인증
+                DefaultHttpClient client = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost(host);
 
-                     try {
-                         httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
-                     }
-                     catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
-                     }
-                     ResponseHandler responseHandler = new BasicResponseHandler();
-                     msg = (String) client.execute(httppost, responseHandler);
-                     Log.d("msg@@@@@@", "msg@@@@@@: " + msg);
+                try {
+                    httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
+                }
+                catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
+                }
+                ResponseHandler responseHandler = new BasicResponseHandler();
+                msg = (String) client.execute(httppost, responseHandler);
+                //Log.d("msg@@@@@@", "msg@@@@@@: " + msg);
 
-                    return msg;
+                return msg;
             }
         }
         BtnAsyncTask async = new BtnAsyncTask();
         async.execute();
 
-        Intent intent = new Intent( Menu.this, Coupon.class);
-        startActivity( intent );
+
     }
 }

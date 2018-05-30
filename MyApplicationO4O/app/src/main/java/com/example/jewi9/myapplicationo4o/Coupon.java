@@ -3,6 +3,7 @@ package com.example.jewi9.myapplicationo4o;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -43,14 +44,23 @@ public class Coupon extends AppCompatActivity {
         }
         couponArray.put(coupon1);
         couponArray.put(coupon2);*/
-        Menu menu = new Menu();
-        //Menu.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        for(int i=0;i<menu.couponArray.length();i++){
-            try {
-                 HashMap<String,String> InputData1 = new HashMap<>();
 
-                InputData1.put("name", menu.couponArray.getJSONObject(i).getString("name"));
-                InputData1.put("dueDate",menu.couponArray.getJSONObject(i).getString("dueDate"));
+
+        Menu myMenu = new Menu();
+        Log.d("Coupon@@@@@@", "CouponARray in Coupon @@@@@@: " + myMenu.coupon_jsonobject);
+
+        //Menu.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        for(int i=0;i<myMenu.coupon_jsonobject.length();i++){
+            try {
+                HashMap<String,String> InputData1 = new HashMap<>();
+               // Log.d("Coupon@@@@@@", "coupon"+Integer.toString(i+1));
+                JSONObject coupon = (JSONObject)myMenu.coupon_jsonobject.get("coupon"+Integer.toString(i+1));
+                //Log.d("Coupon@@@@@@", "object"+coupon);
+
+                InputData1.put("name", coupon.getString("name"));
+                //InputData1.put("discount",coupon.getString("discount"));
+                InputData1.put("datetime",coupon.getString("datetime"));
                 Data.add(InputData1);
 
             } catch (JSONException e) {
@@ -59,7 +69,7 @@ public class Coupon extends AppCompatActivity {
 
         }
         /*adapter생성*/
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this,Data,android.R.layout.simple_list_item_2,new String[]{"name","dueDate"},new int[]{android.R.id.text1,android.R.id.text2});
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this,Data,android.R.layout.simple_list_item_2,new String[]{"name","datetime"},new int[]{android.R.id.text1,android.R.id.text2});
         listView.setAdapter(simpleAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
