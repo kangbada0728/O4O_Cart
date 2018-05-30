@@ -6,6 +6,7 @@ import os
 
 #import os
 import json
+from django.http import HttpResponse
 
 '''
 #im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
@@ -118,10 +119,11 @@ def showImage(_list_xy):
     draw.flush()
     drawTime(_list_xy)
 
-    #im.show()
+    im.show()
     im.save('out.png')
 
 def visualize(data_json):
+    print("visualize")
     list_xy = getXY(data_json)
     showImage(list_xy)
     print(os.getcwd())

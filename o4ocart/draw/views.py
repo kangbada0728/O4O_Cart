@@ -57,8 +57,10 @@ def index(request):
 
 @csrf_exempt
 def draw(request):
-    visualize(data_json)
     print("draw")
+    visualize(data_json)
+    return HttpResponse('success')
+
     #return render(request, 'managerweb/index.html', {})
 
 @csrf_exempt
