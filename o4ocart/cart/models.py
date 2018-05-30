@@ -34,7 +34,7 @@ class Cart_Info(models.Model):
         verbose_name="카트"
     num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='추가할 카트수')
     #num = models.AutoField(primary_key=True, null=False, default=1, verbose_name='카트번호')
-    serial_num = models.PositiveIntegerField(unique=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
+    serial_num = models.CharField(unique=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
     owner = models.ForeignKey(Customer_Info, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='소유자')
 
 
@@ -61,7 +61,7 @@ class Item_Info(models.Model):
     class Meta:
         verbose_name_plural="상품 재고"
         verbose_name="상품 재고"
-    serial_num = models.PositiveIntegerField(unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
+    serial_num = models.CharField(unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='상품')
     inbound_date = models.DateField(verbose_name='입고일', null=False, default=date.today)
     expire_date = models.DateField(verbose_name='유통기한', null=False, default=date.today)
@@ -75,33 +75,46 @@ class Camera_Info(models.Model):
         verbose_name="카메라"
     num = models.PositiveSmallIntegerField(primary_key=True, default=0, null=False, verbose_name='추가할 카메라수')
 
-
+#auto_now_add=True,
 class Pur_History(models.Model):
     class Meta:
         verbose_name_plural="고객 구매정보"
         verbose_name = "고객 구매정보"
     #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
-    time = models.DateTimeField(auto_now_add=True, verbose_name='구매시간', primary_key=True, null=False)
+    time = models.DateTimeField(verbose_name='구매시간', primary_key=True, null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='구매고객')
     item = models.ForeignKey(Item_Info, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
 
 
+class Matrix(models.Model):
+    class Meta:
+        verbose_name_plural="마트 구획"
+        verbose_name="마트 구획"
+    name = models.CharField(max_length=15, primary_key=True, default="", null=False, verbose_name='구획명')
+    start_x = models.PositiveIntegerField(default=0, null=False, verbose_name='x 시작')
+    start_y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 시작')
+    end_x = models.PositiveIntegerField(default=0, null=False, verbose_name='x 끝')
+    end_y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 끝')
+
+#auto_now_add=True,
 class Mv_History(models.Model):
     class Meta:
         verbose_name_plural="고객 이동정보"
         verbose_name="고객 이동정보"
     #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
-    time = models.DateTimeField(auto_now_add=True, verbose_name='이동한 시간', primary_key=True, null=False)
+    time = models.DateTimeField(verbose_name='이동한 시간', primary_key=True, null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='이동고객')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
+    x = models.PositiveIntegerField(default=0, null=False, verbose_name='x 좌표')
+    y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 좌표')
 
 
 class Ad_Info(models.Model):
     class Meta:
         verbose_name_plural="광고"
         verbose_name="광고"
-    num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
-    #num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='번호', default=1)
+    #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
+    num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='번호', default=1)
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
     link_info = models.CharField(max_length=200, null=False, verbose_name='광고영상 링크')
@@ -126,7 +139,7 @@ class Coupon_Item_Info(models.Model):
     class Meta:
         verbose_name_plural="상품 쿠폰 재고"
         verbose_name="상품 쿠폰 재고"
-    serial_num = models.PositiveIntegerField(unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호') # 9자리까지 가능
+    serial_num = models.CharField(unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호') # 9자리까지 가능
     coupon_item = models.ForeignKey(Coupons_Item, on_delete=models.CASCADE, null=False, verbose_name='쿠폰이름')
     coupon_use = models.BooleanField(null=False, default=False, verbose_name='사용여부')
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=True, blank=True, verbose_name='소유자')

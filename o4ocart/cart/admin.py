@@ -1,11 +1,11 @@
 from django.contrib import admin
 from .models import Sex_Info,Customer_Info,Cart_Info,Item_Sort_Info
-from .models import Items,Item_Info,Camera_Info,Pur_History,Mv_History
+from .models import Items,Item_Info,Camera_Info,Pur_History,Mv_History, Matrix
 from .models import Ad_Info,Coupons_Item,Coupon_Item_Info#,Coupons_Sort,Coupon_Sort_Info
 from django.conf.urls import url
 from django.template.response import TemplateResponse
 from django.shortcuts import render
-from .forms import AdForm, CouponForm, CameraForm, CartForm, ItemForm, ItemsForm
+from .forms import AdForm, CouponForm, CameraForm, CartForm, ItemForm, ItemsForm, MatrixForm
 
 
 # Register your models here.
@@ -46,13 +46,6 @@ class Cart_info_Admin(admin.ModelAdmin):
             form=CartForm()
         )
         return TemplateResponse(request, "admin/Cart_info.html", context)
-
-
-class Ad_info_Admin(admin.ModelAdmin):
-    list_per_page = 10
-    list_display = ('num', 'item', 'camera_num',)
-    search_fields = ('item', 'camera_num',)
-    ordering = ('num', 'camera_num',)
 
 
 class Item_Sort_Info_Admin(admin.ModelAdmin):
@@ -126,18 +119,42 @@ class Pur_History_Admin(admin.ModelAdmin):
     list_display = ('customer', 'time', 'item',)
     search_fields = ('customer', 'time', 'item',)
     ordering = ('time',)
-    readonly_fields = ('customer', 'time', 'item',)
+    #readonly_fields = ('customer', 'time', 'item',)
 
+
+class Matrix_Admin(admin.ModelAdmin):
+    list_per_page = 20
+    list_display = ('name', 'start_x', 'start_y', 'end_x', 'end_y',)
+    search_field = ('name','start_x', 'start_y', 'end_x', 'end_y',)
+    ordering = ('name', 'start_x', 'start_y', 'end_x', 'end_y',)
+
+    def get_urls(self):
+        urls = super(Matrix_Admin, self).get_urls()
+        matrix_urls = [url(r'^add/$', self.admin_site.admin_view(self.matrix_view))]
+        return matrix_urls + urls
+
+    def matrix_view(self, request):
+        context = dict(
+            self.admin_site.each_context(request),
+            form=MatrixForm()
+        )
+        return TemplateResponse(request, "admin/Matrix.html", context)
 
 
 class Mv_History_Admin(admin.ModelAdmin):
     list_per_page = 100
-    list_display = ('customer', 'time', 'camera_num',)
+    list_display = ('customer', 'time', 'camera_num', 'x', 'y',)
     list_filter = ('camera_num',)
-    search_fields = ('customer', 'time', 'camera_num',)
+    search_fields = ('customer', 'time', 'camera_num', 'x', 'y',)
     ordering = ('time', 'camera_num',)
     readonly_fields = ('customer', 'time', 'camera_num',)
 
+
+class Ad_info_Admin(admin.ModelAdmin):
+    list_per_page = 10
+    list_display = ('num', 'item', 'camera_num',)
+    search_fields = ('item', 'camera_num',)
+    ordering = ('num', 'camera_num',)
 
 
 class Coupons_Item_Admin(admin.ModelAdmin):
@@ -169,7 +186,7 @@ class Coupon_Item_Info_Admin(admin.ModelAdmin):
 
 #admin.site.site_title = 'test1'
 #admin.site.site_header = 'O4O Cart'
-admin.site.index_title = '마트 관리 도구'
+#admin.site.index_title = '마트 관리 도구'
 
 admin.site.register(Sex_Info)
 admin.site.register(Customer_Info, Customer_info_Admin)
@@ -183,3 +200,4 @@ admin.site.register(Mv_History, Mv_History_Admin)
 admin.site.register(Ad_Info, Ad_info_Admin)
 admin.site.register(Coupons_Item, Coupons_Item_Admin)
 admin.site.register(Coupon_Item_Info, Coupon_Item_Info_Admin)
+admin.site.register(Matrix, Matrix_Admin)

@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Cart_Info, Ad_Info, Coupons_Item, Coupon_Item_Info, Camera_Info, Item_Info, Items
+from .models import Cart_Info, Ad_Info, Coupons_Item, Coupon_Item_Info, Camera_Info, Item_Info, Items, Matrix
 
 
 class CartForm(ModelForm):
@@ -37,3 +37,7 @@ class ItemForm(ModelForm):
         model = Item_Info
         fields = ['item', 'inbound_date', 'expire_date', 'num']
 
+class MatrixForm(ModelForm):
+    class Meta:
+        model = Matrix
+        fields = ['name', 'start_x', 'start_y', 'end_x', 'end_y']
