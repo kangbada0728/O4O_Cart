@@ -1,6 +1,5 @@
 import datetime
 
-#import unittest
 import json
 import os
 
@@ -13,7 +12,7 @@ import datetime
 
 
 def detectQR(image_name):
-    host = '192.168.30.59'
+    host = '127.0.0.1'
     test_logger = logging.getLogger()
     handler = logging.StreamHandler()
     formatter = LogstashFormatterV1()
@@ -25,11 +24,8 @@ def detectQR(image_name):
 
     script_path = os.getcwd();
     detect_result = os.popen("java -jar QRDetect.jar %s"%image_name)
-    #print(detect_result.read())
     csv = detect_result.read().split(',')
     timestamp = image_name.split('_')[1].split('.')[0]
-
-    #print(csv)
 
     if(len(csv)==2) :
         print("NO QR DETECETED")
@@ -44,8 +40,5 @@ def detectQR(image_name):
                 'y':int(csv[i+3]),
                 'time': int(timestamp),
                 }
-
-
             #data_json = json.dumps(data, indent = 2)
-            #print(data_json)
     test_logger.info('python-logstash: test extra fields', extra=data)
