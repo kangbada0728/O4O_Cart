@@ -96,6 +96,13 @@ def comparing_product(request):
 
         sorted_items_form = tree()
 
+        item = Item_Info.objects.get(serial_num=serial)
+
+        sorted_items_form['item_info']['item_name'] = item.item.name
+        sorted_items_form['item_info']['inbound_date'] = item.inbound_date
+        sorted_items_form['item_info']['expire_date'] = item.expire_date
+        sorted_items_form['item_info']['price'] = item.item.price
+
         i = 0
         for check in sorted_items:
             name = 'item' + str(i+1)
