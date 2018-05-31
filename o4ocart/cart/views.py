@@ -115,7 +115,8 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        serial = request_data['serial']
+        time_num = int(request_data['time'])
+        serial = str(request_data['serial'])
         camera_num = int(request_data['camera'])
         coor_x = int(request_data['x'])
         coor_y = int(request_data['y'])
@@ -123,7 +124,7 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
         cart_customer = Cart_Info.objects.get(serial_num=serial).owner
         camera = Camera_Info.objects.get(num=camera_num)
 
-        data = Mv_History(customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
+        data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
         data.save()
 
 '''
@@ -144,6 +145,10 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
 
         return HttpResponse(send_json)
 '''
+
+
+
+
 
 
 def cart_add(request):
@@ -167,7 +172,7 @@ def cart_add(request):
             i = i + 1
     return redirect('/admin/cart/cart_info/')
 
-
+'''
 def ad_add(request):
     if request.method == 'POST':
         form = AdForm(request.POST)
@@ -184,7 +189,7 @@ def ad_add(request):
         data_ad = Ad_Info(num= numcount,item=result_item, camera_num=result_camera, link_info=form3)
         data_ad.save()
     return redirect('/admin/cart/ad_info/')
-
+'''
 
 def coupon_add(request):
     if request.method == 'POST':

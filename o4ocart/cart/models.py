@@ -102,11 +102,12 @@ class Mv_History(models.Model):
         verbose_name_plural="고객 이동정보"
         verbose_name="고객 이동정보"
     #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
-    time = models.DateTimeField(auto_now_add=True,verbose_name='이동한 시간', primary_key=True, null=False)
+    time = models.PositiveIntegerField(default=0, verbose_name='이동한 시간', null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='이동고객')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
     x = models.PositiveIntegerField(default=0, null=False, verbose_name='x 좌표')
     y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 좌표')
+
 
 
 class Ad_Info(models.Model):
@@ -114,10 +115,12 @@ class Ad_Info(models.Model):
         verbose_name_plural="광고"
         verbose_name="광고"
     #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
-    num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='번호', default=1)
+    #num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='번호', default=1)
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
-    camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
     link_info = models.CharField(max_length=200, null=False, verbose_name='광고영상 링크')
+    camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
+    x = models.PositiveIntegerField(default=0, null=False, verbose_name='x 좌표')
+    y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 좌표')
 
 
 class Coupons_Item(models.Model):

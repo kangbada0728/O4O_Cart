@@ -152,9 +152,9 @@ class Mv_History_Admin(admin.ModelAdmin):
 
 class Ad_info_Admin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ('num', 'item', 'camera_num',)
+    list_display = ('item', 'camera_num',)
     search_fields = ('item', 'camera_num',)
-    ordering = ('num', 'camera_num',)
+    ordering = ('camera_num',)
 
 
 class Coupons_Item_Admin(admin.ModelAdmin):
