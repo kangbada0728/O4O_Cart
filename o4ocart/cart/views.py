@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix
 from .models import *
 import json
+import collections
 import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -60,24 +61,20 @@ def coupon_check(request):
 
         coupons = Coupon_Item_Info.objects.filter(customer=id, coupon_use=False).all()
 
-        coupon_arr = []
+        def tree(): return collections.defaultdict(tree)
+
+        coupon_form = tree()
+
+        i = 0
         for check in coupons:
-            data = []
+            name = 'coupon' + str(i + 1)
+            coupon_form[name]['serial_num'] = check.serial_num
+            coupon_form[name]['name'] = check.coupon_item.item.name
+            coupon_form[name]['discount'] = check.coupon_item.discount_rate
+            coupon_form[name]['datetime'] = str(check.coupon_item.end_date)
+            i = i + 1
 
-            data.append(check.serial_num)
-
-            name = check.coupon_item.item.name
-            data.append(name)
-
-            discount = check.coupon_item.discount_rate
-            data.append(discount)
-
-            datetime = str(check.coupon_item.end_date)
-            data.append(datetime)
-
-            coupon_arr.append(data)
-
-        send_json=json.dumps(coupon_arr)
+        send_json=json.dumps(coupon_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
 
@@ -95,15 +92,19 @@ def comparing_product(request):
 
         sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
 
-        items_result = []
-        for check in sorted_items:
-            data = []
-            data.append(check.name)
-            data.append(check.inventory)
-            data.append(check.price)
-            items_result.append(data)
+        def tree(): return collections.defaultdict(tree)
 
-        send_json = json.dumps(items_result)
+        sorted_items_form = tree()
+
+        i = 0
+        for check in sorted_items:
+            name = 'item' + str(i+1)
+            sorted_items_form[name]['name'] = check.name
+            sorted_items_form[name]['inventory'] = check.inventory
+            sorted_items_form[name]['price'] = check.price
+            i = i + 1
+
+        send_json = json.dumps(sorted_items_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
 

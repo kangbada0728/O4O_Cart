@@ -119,7 +119,7 @@ class Pur_History_Admin(admin.ModelAdmin):
     list_display = ('customer', 'time', 'item',)
     search_fields = ('customer', 'time', 'item',)
     ordering = ('time',)
-    #readonly_fields = ('customer', 'time', 'item',)
+    readonly_fields = ('customer', 'time', 'item',)
 
 
 class Matrix_Admin(admin.ModelAdmin):
