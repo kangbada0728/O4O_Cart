@@ -110,7 +110,7 @@ def comparing_product(request):
 
 
 @csrf_exempt
-def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
+def receive_cartqrcode(request):    #qr코드 일련번호, 카메라번호, x, y
     if request.method == 'POST':
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
@@ -127,26 +127,34 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
         data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
         data.save()
 
-'''
-        item_sort = Item_Info.objects.get(serial_num=serial).item.sort
-        sort_items = Items.objects.filter(sort=item_sort).all()
 
-        sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
+@csrf_exempt
+def send_mvhistory(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
 
-        items_result = []
-        for check in sorted_items:
-            data = []
-            data.append(check.name)
-            data.append(check.inventory)
-            data.append(check.price)
-            items_result.append(data)
+        customer_id = request_data['id']
+        mv_historys = Mv_History.objects.filter(customer=customer_id).all()
 
-        send_json = json.dumps(items_result)
+        sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
+
+        def tree(): return collections.defaultdict(tree)
+
+        sorted_mv_historys_form = tree()
+
+        i = 0
+        for check in sorted_mv_historys:
+            name = 'history' + str(i+1)
+            sorted_mv_historys_form[name]['time'] = check.time
+            sorted_mv_historys_form[name]['camera_num'] = check.camera_num.num
+            sorted_mv_historys_form[name]['x'] = check.x
+            sorted_mv_historys_form[name]['y'] = check.y
+            i = i + 1
+
+        send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
-'''
-
-
 
 
 
