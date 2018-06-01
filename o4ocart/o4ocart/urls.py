@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^',include('android.urls')),
     path('cart/', include('cart.urls')),
     path('admin/', admin.site.urls),
+
 ]
