@@ -53,7 +53,8 @@ def getXY(data_json):
 
     #print(os.path.dirname( os.path.abspath( __file__ ) ))
     list_data = data_json["data"]
-
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print(list_data)
     return(list_data)
     #x는 list이다
     #print(type(x))
@@ -101,7 +102,6 @@ def showImage(_list_xy):
     for xy_order in range(0, int((len(_list_xy)-1)/3)):
         #ezier = "m 0,0 t"
         for coordintes in range(0, 3):
-
             p0_x = _list_xy[xy_order*3]["x"]
             p0_y = _list_xy[xy_order*3]["y"]
             draw.ellipse((p0_x-10,p0_y-10,p0_x+10,p0_y+10),brush)
@@ -121,9 +121,24 @@ def showImage(_list_xy):
 
     im.show()
     im.save('out.png')
+def drawPoints(list_xy):
+    pen = aggdraw.Pen((190,150,130))
+    brush = aggdraw.Brush((190,150,110))
+    outline = aggdraw.Pen((190,170,130),5)
+    for xy_order in range(0, (len(list_xy)-1)):
+        p_x = list_xy[xy_order]["x"]
+        p_y = list_xy[xy_order]["y"]
+        draw.ellipse((p_x-10,p_y-10,p_x+10,p_y+10),brush)
+    draw.flush()
+    drawTime(list_xy)
+
+    im.show()
+    im.save('out.png')
 
 def visualize(data_json):
     print("visualize")
-    list_xy = getXY(data_json)
-    showImage(list_xy)
+    #list_xy = getXY(data_json)
+    list_xy = data_json
+    #showImage(list_xy)
+    drawPoints(list_xy)
     print(os.getcwd())
