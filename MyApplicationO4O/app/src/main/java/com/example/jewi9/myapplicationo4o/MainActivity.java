@@ -26,8 +26,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-
-
 public class MainActivity extends AppCompatActivity {
 
     private EditText id;
@@ -57,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
                 class BtnAsyncTask extends AsyncTask{
                     String result="";
-                    String url = "http://192.168.31.67:8000/cart/user_signin/";
+                    String url = "http://192.168.17.209:8000/cart/user_signin/";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -66,14 +64,13 @@ public class MainActivity extends AppCompatActivity {
 
                         try {
                             jsonObject.accumulate("id",id_string);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        try {
                             jsonObject.accumulate("pwd",pw_string);
+                            jsonObject.accumulate("reg_id",FirebaseInstanceId.getInstance().getToken());
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
 
                         json = jsonObject.toString();
                         try {

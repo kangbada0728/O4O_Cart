@@ -33,5 +33,6 @@ dependencies {
     */
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
 
+
 }
 apply plugin: 'com.google.gms.google-services'

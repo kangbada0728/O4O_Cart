@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 public class Menu extends AppCompatActivity
 {
     public static JSONObject coupon_jsonobject;
+    public static JSONObject product_jsonobject;
     String barcode=null;
 
     @Override
@@ -49,40 +50,51 @@ public class Menu extends AppCompatActivity
 
     }
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent)
+    public void onActivityResult(int requestCode, int resultCode, Intent intent)//바코드
     {
-        Log.d("onActivityResult@@@@@@", "onActivityResult@@@@@@: ");
         if (resultCode == Activity.RESULT_OK)
         {
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-            //String re = scanResult.getContents();
-            // barcode = re;
+
             barcode = scanResult.getContents();
-            Log.d("onActivityResult@@@@@@", "onActivityResult@@@@@@: " + barcode);
             Toast.makeText(this, barcode, Toast.LENGTH_LONG).show();
 
             class BtnAsyncTask extends AsyncTask {
                 String result="";
-                String url = "http://192.168.22.69:8000/compareProduct";//나중에 원격서버주소로 변경!!!!!!!!!
-                //String url = "http://192.168.26.225:8000/mart/coupon_check/";
+                String url = "http://192.168.17.209:8000/cart/comparing_product/";//나중에 원격서버주소로 변경!!!!!!!!!
+                @Override
+                protected void onPostExecute(Object o) {
+                    super.onPostExecute(o);
+                    Intent intent = new Intent( Menu.this, Compare.class);
+                    Log.d("INTENT@@@@@@", "INTENT@@@@@@ ");
+                    startActivity(intent);
+
+                }
                 @Override
                 protected Object doInBackground(Object[] objects) {
                     String json="";
                     JSONObject jsonObject = new JSONObject();
 
                     try {
-                        jsonObject.accumulate("barcode",barcode);
-                        Log.d("barcode", "barcode@@@@@@ in Menu.java: " + barcode);
+                        jsonObject.accumulate("serial",barcode);
+                        Log.d("barcodeSerial", "barcodeSerial@@@@@@ in Menu.java: " + barcode);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     json = jsonObject.toString();
                     try {
                         result = goHttpPost(url, json);
+                        Log.d("productresult@@@@@@", "productResult@@@@@@: " + result);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
+                    try {
+                        product_jsonobject = new JSONObject(result);
+                        JSONObject item_info = (JSONObject)product_jsonobject.get("item_info");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     return null;
                 }
                 public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
@@ -97,13 +109,12 @@ public class Menu extends AppCompatActivity
                     }
                     ResponseHandler responseHandler = new BasicResponseHandler();
                     msg = (String) client.execute(httppost, responseHandler);
-                    //Log.d("msg@@@@@@", "msg@@@@@@: " + msg);
-
                     return msg;
                 }
             }
             BtnAsyncTask async = new BtnAsyncTask();
             async.execute();
+
         }
     }
 
@@ -116,7 +127,7 @@ public class Menu extends AppCompatActivity
         class BtnAsyncTask extends AsyncTask {
             String result="";
             //String url = "http://192.168.31.67:8000/requestCoupon";//나중에 원격서버주소로 변경!!!!!!!!!
-            String url = "http://192.168.31.67:8000/cart/coupon_check/";
+            String url = "http://192.168.17.209:8000/cart/coupon_check/";
 
             @Override
             protected void onPostExecute(Object o) {
@@ -171,14 +182,11 @@ public class Menu extends AppCompatActivity
                 }
                 ResponseHandler responseHandler = new BasicResponseHandler();
                 msg = (String) client.execute(httppost, responseHandler);
-                //Log.d("msg@@@@@@", "msg@@@@@@: " + msg);
 
                 return msg;
             }
         }
         BtnAsyncTask async = new BtnAsyncTask();
         async.execute();
-
-
     }
 }

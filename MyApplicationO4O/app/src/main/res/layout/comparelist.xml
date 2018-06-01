@@ -8,14 +8,15 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     tools:context=".Coupon" >
+
     <TextView
-        android:gravity="center"
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="보유 쿠폰" />
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:text="가격 비교" />
     <ListView
-        android:id="@+id/List_view"
+        android:id="@+id/listview1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

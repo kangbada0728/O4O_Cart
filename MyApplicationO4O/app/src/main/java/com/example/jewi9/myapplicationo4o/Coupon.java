@@ -26,25 +26,6 @@ public class Coupon extends AppCompatActivity {
         setContentView(R.layout.couponlist);
 
         listView =(ListView)findViewById(R.id.List_view);
-        JSONObject coupon1 = new JSONObject();
-        JSONObject coupon2 = new JSONObject();
-
-        /*JSONArray couponArray = new JSONArray();//jsonArray형태로 서버에서 쿠폰정보를 받아올것임.
-        try {
-            coupon1.accumulate("name","coupon1");
-            coupon1.accumulate("dueDate","2018-5-26");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            coupon2.accumulate("name","coupon2");
-            coupon2.accumulate("dueDate","2018-5-30");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        couponArray.put(coupon1);
-        couponArray.put(coupon2);*/
-
 
         Menu myMenu = new Menu();
         Log.d("Coupon@@@@@@", "CouponARray in Coupon @@@@@@: " + myMenu.coupon_jsonobject);
@@ -54,7 +35,7 @@ public class Coupon extends AppCompatActivity {
         for(int i=0;i<myMenu.coupon_jsonobject.length();i++){
             try {
                 HashMap<String,String> InputData1 = new HashMap<>();
-               // Log.d("Coupon@@@@@@", "coupon"+Integer.toString(i+1));
+                // Log.d("Coupon@@@@@@", "coupon"+Integer.toString(i+1));
                 JSONObject coupon = (JSONObject)myMenu.coupon_jsonobject.get("coupon"+Integer.toString(i+1));
                 //Log.d("Coupon@@@@@@", "object"+coupon);
 

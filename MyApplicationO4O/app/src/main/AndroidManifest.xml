@@ -34,6 +34,7 @@
         <activity android:name=".Coupon"></activity>
         <activity android:name=".ClickCoupon"></activity>
         <activity android:name=".BarcodeScan"></activity>
+        <activity android:name=".Compare"></activity>
 
 
         <service     android:name=".MyFirebaseMessagingService">
