@@ -6,3 +6,4 @@ pip==10.0.1
 pyfcm==1.4.5
 Django==2.0.5
 django-graphos-3==1.1
+Faker==0.8.15

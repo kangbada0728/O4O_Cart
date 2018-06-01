@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix
 from .models import *
 import json
+import collections
 import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -41,10 +42,12 @@ def user_signin(request):
 
         result_id = request_data['id']
         result_pwd = request_data['pwd']
+        result_reg_id = request_data['reg_id']
 
         real_pwd = Customer_Info.objects.get(id=result_id).pwd
 
         if real_pwd == result_pwd:
+            Customer_Info.objects.filter(id=result_id).update(reg_id=result_reg_id)
             return HttpResponse('success')
         else:
             return HttpResponse('fail')
@@ -60,24 +63,20 @@ def coupon_check(request):
 
         coupons = Coupon_Item_Info.objects.filter(customer=id, coupon_use=False).all()
 
-        coupon_arr = []
+        def tree(): return collections.defaultdict(tree)
+
+        coupon_form = tree()
+
+        i = 0
         for check in coupons:
-            data = []
+            name = 'coupon' + str(i + 1)
+            coupon_form[name]['serial_num'] = check.serial_num
+            coupon_form[name]['name'] = check.coupon_item.item.name
+            coupon_form[name]['discount'] = check.coupon_item.discount_rate
+            coupon_form[name]['datetime'] = str(check.coupon_item.end_date)
+            i = i + 1
 
-            data.append(check.serial_num)
-
-            name = check.coupon_item.item.name
-            data.append(name)
-
-            discount = check.coupon_item.discount_rate
-            data.append(discount)
-
-            datetime = str(check.coupon_item.end_date)
-            data.append(datetime)
-
-            coupon_arr.append(data)
-
-        send_json=json.dumps(coupon_arr)
+        send_json=json.dumps(coupon_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
 
@@ -95,26 +94,53 @@ def comparing_product(request):
 
         sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
 
-        items_result = []
-        for check in sorted_items:
-            data = []
-            data.append(check.name)
-            data.append(check.inventory)
-            data.append(check.price)
-            items_result.append(data)
+        def tree(): return collections.defaultdict(tree)
 
-        send_json = json.dumps(items_result)
+        sorted_items_form = tree()
+
+        item = Item_Info.objects.get(serial_num=serial)
+
+        sorted_items_form['item_info']['item_name'] = item.item.name
+        sorted_items_form['item_info']['inbound_date'] = str(item.inbound_date)
+        sorted_items_form['item_info']['expire_date'] = str(item.expire_date)
+        sorted_items_form['item_info']['price'] = item.item.price
+
+
+
+        ad_data = Ad_Info.objects.all()
+
+        i = 0
+        for check in ad_data:
+            if check.item.sort == item_sort:
+                name = 'ad' + str(i+1)
+                sorted_items_form[name]['name'] = check.item
+                sorted_items_form[name]['inventory'] = check.item.inventory
+                sorted_items_form[name]['price'] = check.item.price
+
+            i = i + 1
+
+
+        i = 0
+        for check in sorted_items:
+            name = 'item' + str(i+1)
+            sorted_items_form[name]['name'] = check.name
+            sorted_items_form[name]['inventory'] = check.inventory
+            sorted_items_form[name]['price'] = check.price
+            i = i + 1
+
+        send_json = json.dumps(sorted_items_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
 
 
 @csrf_exempt
-def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
+def receive_cartqrcode(request):    #qr코드 일련번호, 카메라번호, x, y
     if request.method == 'POST':
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        serial = request_data['serial']
+        time_num = int(request_data['time'])
+        serial = str(request_data['serial'])
         camera_num = int(request_data['camera'])
         coor_x = int(request_data['x'])
         coor_y = int(request_data['y'])
@@ -122,27 +148,39 @@ def receive_qrcode(request):    #qr코드 일련번호, 카메라번호, x, y
         cart_customer = Cart_Info.objects.get(serial_num=serial).owner
         camera = Camera_Info.objects.get(num=camera_num)
 
-        data = Mv_History(customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
+        data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
         data.save()
 
-'''
-        item_sort = Item_Info.objects.get(serial_num=serial).item.sort
-        sort_items = Items.objects.filter(sort=item_sort).all()
 
-        sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
+@csrf_exempt
+def send_mvhistory(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
 
-        items_result = []
-        for check in sorted_items:
-            data = []
-            data.append(check.name)
-            data.append(check.inventory)
-            data.append(check.price)
-            items_result.append(data)
+        customer_id = request_data['id']
+        mv_historys = Mv_History.objects.filter(customer=customer_id).all()
 
-        send_json = json.dumps(items_result)
+        sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
+
+        def tree(): return collections.defaultdict(tree)
+
+        sorted_mv_historys_form = tree()
+
+        i = 0
+        for check in sorted_mv_historys:
+            name = 'history' + str(i+1)
+            sorted_mv_historys_form[name]['time'] = check.time
+            sorted_mv_historys_form[name]['camera_num'] = check.camera_num.num
+            sorted_mv_historys_form[name]['x'] = check.x
+            sorted_mv_historys_form[name]['y'] = check.y
+            i = i + 1
+
+        send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
-'''
+
+
 
 
 def cart_add(request):
@@ -166,7 +204,7 @@ def cart_add(request):
             i = i + 1
     return redirect('/admin/cart/cart_info/')
 
-
+'''
 def ad_add(request):
     if request.method == 'POST':
         form = AdForm(request.POST)
@@ -183,7 +221,7 @@ def ad_add(request):
         data_ad = Ad_Info(num= numcount,item=result_item, camera_num=result_camera, link_info=form3)
         data_ad.save()
     return redirect('/admin/cart/ad_info/')
-
+'''
 
 def coupon_add(request):
     if request.method == 'POST':

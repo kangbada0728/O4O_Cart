@@ -119,7 +119,7 @@ class Pur_History_Admin(admin.ModelAdmin):
     list_display = ('customer', 'time', 'item',)
     search_fields = ('customer', 'time', 'item',)
     ordering = ('time',)
-    #readonly_fields = ('customer', 'time', 'item',)
+    readonly_fields = ('customer', 'time', 'item',)
 
 
 class Matrix_Admin(admin.ModelAdmin):
@@ -147,14 +147,15 @@ class Mv_History_Admin(admin.ModelAdmin):
     list_filter = ('camera_num',)
     search_fields = ('customer', 'time', 'camera_num', 'x', 'y',)
     ordering = ('time', 'camera_num',)
-    readonly_fields = ('customer', 'time', 'camera_num',)
+    #readonly_fields = ('customer', 'time', 'camera_num', 'x', 'y',)
 
 
 class Ad_info_Admin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ('num', 'item', 'camera_num',)
+    list_display = ('item', 'camera_num', 'x', 'y',)
+    list_filter = ('item', 'camera_num',)
     search_fields = ('item', 'camera_num',)
-    ordering = ('num', 'camera_num',)
+    ordering = ('item', 'camera_num', 'x', 'y',)
 
 
 class Coupons_Item_Admin(admin.ModelAdmin):

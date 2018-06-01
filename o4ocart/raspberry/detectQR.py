@@ -41,5 +41,5 @@ def detectQR(image_name):
                 'time': int(timestamp),
                 }
             #data_json = json.dumps(data, indent = 2)
-            print(QR DETECTED)
+            print("QR DETECTED")
             test_logger.info('python-logstash: test extra fields', extra=data)
