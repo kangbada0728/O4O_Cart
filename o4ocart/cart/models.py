@@ -25,6 +25,7 @@ class Customer_Info(models.Model):
             MinValueValidator(0)
         ], default=0, verbose_name='나이')
     sex = models.ForeignKey(Sex_Info, on_delete=models.SET_NULL, null=True, verbose_name='성별')
+    reg_id = models.CharField(max_length=200, null=True, blank=True, default="", verbose_name='Customer Key')
     note = models.TextField(max_length=1000, null=True, blank=True, default="", verbose_name='비고')
 
 

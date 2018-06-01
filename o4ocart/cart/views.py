@@ -42,10 +42,12 @@ def user_signin(request):
 
         result_id = request_data['id']
         result_pwd = request_data['pwd']
+        result_reg_id = request_data['reg_id']
 
         real_pwd = Customer_Info.objects.get(id=result_id).pwd
 
         if real_pwd == result_pwd:
+            Customer_Info.objects.filter(id=result_id).update(reg_id=result_reg_id)
             return HttpResponse('success')
         else:
             return HttpResponse('fail')
@@ -104,7 +106,7 @@ def comparing_product(request):
         sorted_items_form['item_info']['price'] = item.item.price
 
 
-        item_name = Item_Info.objects.get(serial_num=serial).item
+
         ad_data = Ad_Info.objects.all()
 
         i = 0
