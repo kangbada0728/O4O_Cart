@@ -99,9 +99,24 @@ def comparing_product(request):
         item = Item_Info.objects.get(serial_num=serial)
 
         sorted_items_form['item_info']['item_name'] = item.item.name
-        sorted_items_form['item_info']['inbound_date'] = item.inbound_date
-        sorted_items_form['item_info']['expire_date'] = item.expire_date
+        sorted_items_form['item_info']['inbound_date'] = str(item.inbound_date)
+        sorted_items_form['item_info']['expire_date'] = str(item.expire_date)
         sorted_items_form['item_info']['price'] = item.item.price
+
+
+        item_name = Item_Info.objects.get(serial_num=serial).item
+        ad_data = Ad_Info.objects.all()
+
+        i = 0
+        for check in ad_data:
+            if check.item.sort == item_sort:
+                name = 'ad' + str(i+1)
+                sorted_items_form[name]['name'] = check.item
+                sorted_items_form[name]['inventory'] = check.item.inventory
+                sorted_items_form[name]['price'] = check.item.price
+
+            i = i + 1
+
 
         i = 0
         for check in sorted_items:
