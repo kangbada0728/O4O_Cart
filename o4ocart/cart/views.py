@@ -193,6 +193,8 @@ def receive_cartqrcode(request):  # qr코드 일련번호, 카메라번호, x, y
         if len(ad_links) != 0:
             send_json = json.dumps(ad_links, ensure_ascii=False)
             push_service.notify_single_device(registration_id=cart_customer.reg_id, message_title='ad', message_body=send_json, data_message=send_json)
+            data = Ad_checker(ad=ad_data, customer=cart_customer, show_date=date.today)
+            data.save()
 
 
 
