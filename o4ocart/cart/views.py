@@ -77,7 +77,7 @@ def coupon_check(request):
             coupon_form[name]['serial_num'] = check.serial_num
             coupon_form[name]['name'] = check.coupon_item.item.name
             coupon_form[name]['discount'] = check.coupon_item.discount_rate
-            coupon_form[name]['datetime'] = str(check.coupon_item.end_date)
+            coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date().isoformat())
             i = i + 1
 
         send_json = json.dumps(coupon_form, ensure_ascii=False)
@@ -122,32 +122,36 @@ def comparing_product(request):
             i = i + 1
 
 
-        items_lista = Items.objects.get(sort=item_sort)
-        item_list = {}
-
-        for check in items_lista:
-            item_list[check.name] = 0
-
-        # pur_data = Pur_History.objects.values('item').values('item').get(sort=item_sort)
-        #
-        # for check in pur_data:
-        #     item_list[check.name] = item_list[check.name] + 1
-
-        pur_data = Pur_History.objects.all()
-
-        for check in pur_data:
-            if check.item.item.sort == item_sort:
-                item_list[check.item.item.name] += 1
 
 
 
-        sorted_popular_items = sorted(item_list.items(), key=operator.itemgetter(1))
 
-        i = 0
-        for check in sorted_popular_items:
-            name = 'popular' + str(i + 1)
-            sorted_items_form[name]['name'] = check
-            i = i + 1
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         i = 0
         for check in sorted_items:
