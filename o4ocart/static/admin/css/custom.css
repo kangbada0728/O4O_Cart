@@ -1,12 +1,15 @@
+html { background: url('..\\image\\main.jpg') no-repeat center center fixed; -webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;}
+
 body{
     color: #5e5e5e;
-    background: #edecec;
-    background-image:url('..\\image\\main.jpg');
-    background-repeat:no-repeat;
-    background-position: 0, 0;
-    background=size: cover;
-}
+    background: transparent;
+    /*
+    background:  #edecec;
+    */
 
+}
+/*#edecec; 회색*/
+/* #00e19f 연한회*/
 ul li {
     padding: 0;
 }
@@ -19,6 +22,7 @@ ul li {
 }
 
 div.breadcrumbs, .module h2, .module caption, .inline-group h2 {
+    height: 30px;
     background: #00e19f;
 }
 
@@ -50,6 +54,7 @@ a:hover {
 
 #content-related {
     background: transparent;
+
 }
 #content-related .module {
     background: #fff;
