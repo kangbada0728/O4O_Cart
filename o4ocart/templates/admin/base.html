@@ -18,16 +18,16 @@
 	{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 	</head>
 	{% load i18n %}
-	
+
 	<body  class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
 	  data-admin-utc-offset="{% now "Z" %}">
 	 <!--
 	<iframe src="http://127.0.0.1:5601/app/kibana#/visualize/create?embed=true&type=area&indexPattern=logstash-*&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now%2Fd,mode:quick,to:now%2Fd))&_a=(filters:!(),linked:!f,query:(query_string:(analyze_wildcard:!t,query:'*')),uiState:(vis:(legendOpen:!t)),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:x,order:desc,orderBy:_term,size:5),schema:segment,type:terms)),listeners:(),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,defaultYExtents:!f,interpolate:linear,legendPosition:right,mode:stacked,scale:linear,setYExtents:!f,times:!()),title:'New+Visualization',type:area))" height="600" width="800"></iframe>
 	-->
-			
+
 	<!-- Container -->
 	<div id="container">
-	
+
 	    {% if not is_popup %}
 	    <!-- Header -->
 	    <div id="header">
@@ -71,7 +71,7 @@
 	    </div>
 	    {% endblock %}
 	    {% endif %}
-	
+
 	    {% block messages %}
 	        {% if messages %}
 	        <ul class="messagelist">{% for message in messages %}
@@ -79,7 +79,7 @@
 	        {% endfor %}</ul>
 	        {% endif %}
 	    {% endblock messages %}
-	
+
 	    <!-- Content -->
 	    <div id="content" class="{% block coltype %}colM{% endblock %}">
 	        {% block pretitle %}
@@ -88,21 +88,23 @@
 				{% block content_title %}
 					{% if title %}<h1>O4O Cart 관리자 웹페이지입니다</h1>{% endif %}{% endblock %}
 	        {% block content %}
-	
+
 	        {% block object-tools %}{% endblock %}
-	
+
 	        {{ content }}
-	
+
 	        {% endblock %}
+          <!--
 					<img src ={% static "admin\image\main.png" %} height="480" width="800">
+        -->
 	        {% block sidebar %}{% endblock %}
 	        <br class="clear" />
 	    </div>
 	    <!-- END Content -->
-	
+
 	    {% block footer %}<div id="footer"></div>{% endblock %}
 	</div>
 	<!-- END Container -->
-	
+
 	</body>
 	</html>

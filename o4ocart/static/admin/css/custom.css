@@ -1,6 +1,10 @@
 body{
     color: #5e5e5e;
     background: #edecec;
+    background-image:url('..\\image\\main.jpg');
+    background-repeat:no-repeat;
+    background-position: 0, 0;
+    background=size: cover;
 }
 
 ul li {
