@@ -19,7 +19,7 @@ class Sex_Info_Admin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-'''
+'''#ㅁㄴㅇㄹ
 
 class Customer_info_Admin(admin.ModelAdmin):
     list_per_page = 10
