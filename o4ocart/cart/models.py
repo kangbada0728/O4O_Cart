@@ -29,6 +29,7 @@ class Customer_Info(models.Model):
     note = models.TextField(max_length=1000, null=True, blank=True, default="", verbose_name='비고')
 
 
+
 class Cart_Info(models.Model):
     class Meta:
         verbose_name_plural="카트"
@@ -124,6 +125,15 @@ class Ad_Info(models.Model):
     start_y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 시작')
     end_x = models.PositiveIntegerField(default=0, null=False, verbose_name='x 끝')
     end_y = models.PositiveIntegerField(default=0, null=False, verbose_name='y 끝')
+
+
+class Ad_checker(models.Model):
+    class Meta:
+        verbose_name_plural="광고 보여준 사람"
+        verbose_name="광고 보여준사람"
+    ad = models.ForeignKey(Ad_Info, on_delete=models.CASCADE, null=False, verbose_name='광고')
+    customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='고객')
+    show_date = models.DateField(default=date.today, null=False, verbose_name='보여준 날짜')
 
 
 class Coupons_Item(models.Model):

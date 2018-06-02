@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix, Mv_History
+from .models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix, Mv_History, Ad_checker
 from .models import *
 import json
 import collections
@@ -8,9 +8,13 @@ import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm, MatrixForm
+from django.db.models import Q
+import operator
+
 from pyfcm import FCMNotification
 
-#API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
+API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
+push_service = FCMNotification(api_key=API_KEY)
 
 @csrf_exempt
 def user_signup(request):
@@ -166,6 +170,54 @@ def receive_cartqrcode(request):  # qr코드 일련번호, 카메라번호, x, y
 
         data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
         data.save()
+
+
+        ad_data = Ad_Info.objects.get(Q(start_x__lte=coor_x) | Q(start_y__lte=coor_y) | Q(end_x__gte=coor_x) | Q(end_y__gte=coor_y))
+
+        def tree():
+            return collections.defaultdict(tree)
+
+        ad_links = tree()
+
+        i=0
+        for check in ad_data:
+            ad_check = Ad_checker.objects.get(Q(ad=check) & Q(customer=cart_customer) & Q(show_date=date.today))
+            if ad_check.objects.count()==0:
+                name = 'ad'+str(i+1)
+                ad_links[name]['link'] = check.link_info
+                ad_links[name]['item'] = check.item.name
+                i=i+1
+
+
+        if len(ad_links) != 0:
+            send_json = json.dumps(ad_links, ensure_ascii=False)
+            push_service.notify_single_device(registration_id=cart_customer.reg_id, message_title='ad', message_body=send_json, data_message=send_json)
+
+
+
+@csrf_exempt
+def send_coupon(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        result_item = str(request_data['item'])
+        result_id = str(request_data['id'])
+
+        item_name = Items.objects.get(name=result_item)
+        coupon_sort = Coupons_Item.objects.get(item=item_name)
+        coupon_send = Coupon_Item_Info.objects.filter(Q(coupon_item=coupon_sort) & Q(coupon_use=False)).first()
+
+
+        if len(coupon_send) != 0:
+            coupon_serial = coupon_send.serial_num
+            cus = Customer_Info.objects.get(id=result_id)
+            Coupon_Item_Info.objects.filter(serial_num=coupon_serial).update(customer=cus)
+            return HttpResponse('Receive Coupon')
+        else:
+            return HttpResponse('No Coupon')
+
+
 
 
 @csrf_exempt

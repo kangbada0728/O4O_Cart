@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Sex_Info,Customer_Info,Cart_Info,Item_Sort_Info
-from .models import Items,Item_Info,Camera_Info,Pur_History,Mv_History, Matrix
+from .models import Items,Item_Info,Camera_Info,Pur_History,Mv_History, Matrix, Ad_checker
 from .models import Ad_Info,Coupons_Item,Coupon_Item_Info#,Coupons_Sort,Coupon_Sort_Info
 from django.conf.urls import url
 from django.template.response import TemplateResponse
@@ -19,7 +19,7 @@ class Sex_Info_Admin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-'''#ㅁㄴㅇㄹ
+'''
 
 class Customer_info_Admin(admin.ModelAdmin):
     list_per_page = 10
@@ -157,6 +157,12 @@ class Ad_info_Admin(admin.ModelAdmin):
     search_fields = ('item', 'camera_num',)
     ordering = ('item', 'camera_num',)
 
+class Ad_checker_Admin(admin.ModelAdmin):
+    list_per_page = 100
+    list_display = ('ad', 'customer', 'show_date',)
+    search_fields = ('ad', 'customer', 'show_date',)
+    ordering = ('ad', 'customer', 'show_date',)
+
 
 class Coupons_Item_Admin(admin.ModelAdmin):
     list_per_page = 10
@@ -202,3 +208,4 @@ admin.site.register(Ad_Info, Ad_info_Admin)
 admin.site.register(Coupons_Item, Coupons_Item_Admin)
 admin.site.register(Coupon_Item_Info, Coupon_Item_Info_Admin)
 admin.site.register(Matrix, Matrix_Admin)
+admin.site.register(Ad_checker, Ad_checker_Admin)
