@@ -51,7 +51,7 @@ public class ListViewAdapter_Coupon extends BaseAdapter {
         ImageView iconImageView = (ImageView) convertView.findViewById(R.id.imageView1) ;
         TextView CouponNameTextView = (TextView) convertView.findViewById(R.id.textView1) ;
         TextView DiscountRateTextView = (TextView) convertView.findViewById(R.id.textView2) ;
-
+        TextView DueDateTextView = (TextView) convertView.findViewById(R.id.textView3);
 
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
         ListViewItem_Coupon listViewItem = listViewItemList.get(position);
@@ -60,19 +60,20 @@ public class ListViewAdapter_Coupon extends BaseAdapter {
         iconImageView.setImageDrawable(listViewItem.getIcon());
         CouponNameTextView.setText(listViewItem.getCouponName());
         DiscountRateTextView.setText(listViewItem.getDiscount());
+        DueDateTextView.setText(listViewItem.getdueDate());
 
         return convertView;
 
     }
     // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
-    public void addItem(Drawable icon, String couponName,String discountRate) {
+    public void addItem(Drawable icon, String couponName, String discountRate, String dueDate) {
         ListViewItem_Coupon item = new ListViewItem_Coupon();
 
         item.setIcon(icon);
         item.setCouponName(couponName);
         item.setDiscount(discountRate);
+        item.setdueDate(dueDate);
 
         listViewItemList.add(item);
     }
-
 }

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Coupon extends AppCompatActivity {
-    private ArrayList<HashMap<String,String>> Data = new ArrayList<HashMap<String, String>>();
+   // private ArrayList<HashMap<String,String>> Data = new ArrayList<HashMap<String, String>>();
     private ListView listView;
 
     @Override
@@ -33,42 +34,27 @@ public class Coupon extends AppCompatActivity {
         // 리스트뷰 참조 및 Adapter달기
         listView.setAdapter(adapter);
 
+        Menu menu = new Menu();
+        Log.d("Coupon@@@@@@", "CouponARray in Coupon @@@@@@: " + menu.coupon_jsonobject);
 
-        Menu myMenu = new Menu();
-        Log.d("Coupon@@@@@@", "CouponARray in Coupon @@@@@@: " + myMenu.coupon_jsonobject);
-        // 첫 번째 아이템 추가.
-        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background),
-                "Account Box Black 36dp","aaa") ;
-
-        //Menu.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-        /*for(int i=0;i<myMenu.coupon_jsonobject.length();i++){
+        for(int i=0;i<menu.coupon_jsonobject.length();i++){
             try {
-                HashMap<String,String> InputData1 = new HashMap<>();
-                // Log.d("Coupon@@@@@@", "coupon"+Integer.toString(i+1));
-                JSONObject coupon = (JSONObject)myMenu.coupon_jsonobject.get("coupon"+Integer.toString(i+1));
-                //Log.d("Coupon@@@@@@", "object"+coupon);
-
-                InputData1.put("name", coupon.getString("name"));
-                //InputData1.put("discount",coupon.getString("discount"));
-                InputData1.put("datetime",coupon.getString("datetime"));
-                Data.add(InputData1);
-
+                JSONObject coupon = (JSONObject)menu.coupon_jsonobject.get("coupon"+Integer.toString(i+1));
+                String name = coupon.getString("name");
+                String discountRate = coupon.getString("discount"); discountRate = "할인율: " + discountRate + "%";
+                String dueDate = coupon.getString("datetime");  dueDate = "사용기한: " + dueDate;
+                adapter.addItem(ContextCompat.getDrawable(this,R.drawable.ic_launcher_background),name,discountRate,dueDate);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-        }*/
-        /*adapter생성*/
-        //SimpleAdapter simpleAdapter = new SimpleAdapter(this,Data,android.R.layout.simple_list_item_2,new String[]{"name","datetime"},new int[]{android.R.id.text1,android.R.id.text2});
-        //listView.setAdapter(simpleAdapter);
-
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        }
+        Button applyCoupon = (Button)findViewById(R.id.apply);
+        applyCoupon.setOnClickListener(new Button.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),ClickCoupon.class);
-                startActivity(intent);
+            public void onClick(View v) {
+
             }
-        });*/
+        });
     }
 }

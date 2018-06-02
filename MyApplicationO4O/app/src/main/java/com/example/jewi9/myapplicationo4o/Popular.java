@@ -28,11 +28,10 @@ public class Popular extends AppCompatActivity {
         for(int i = 0 ;i<menu.product_jsonobject.length()-1;i++){
             try {
                 //product에 item1,2... 들을 각각 넣는다.
-                JSONObject product = (JSONObject)menu.product_jsonobject.get("item"+Integer.toString(i+1));
-                String name = product.getString("name");
-                String price = product.getString("price"); price = price + "원";
+                JSONObject product = (JSONObject)menu.product_jsonobject.get("popular"+Integer.toString(i+1));
+                String name = product.getString("name"); name = Integer.toString(i+1) + ". " + name;
 
-                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background), name, price);
+                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background), name, "");
 
             } catch (JSONException e) {
                 e.printStackTrace();

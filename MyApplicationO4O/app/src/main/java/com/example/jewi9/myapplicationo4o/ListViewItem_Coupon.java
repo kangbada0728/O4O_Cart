@@ -6,6 +6,7 @@ public class ListViewItem_Coupon {
     private Drawable icon ;
     private String discount ;
     private String couponName;
+    private String dueDate;
 
     public void setIcon(Drawable icon) {
         this.icon = icon ;
@@ -16,6 +17,9 @@ public class ListViewItem_Coupon {
     public void setDiscount(String discount) {
         this.discount = discount ;
     }
+    public void setdueDate(String dueDate){
+        this.dueDate = dueDate;
+    }
 
     public Drawable getIcon() {
         return this.icon ;
@@ -25,5 +29,8 @@ public class ListViewItem_Coupon {
     }
     public String getDiscount() {
         return this.discount ;
+    }
+    public String getdueDate(){
+        return this.dueDate;
     }
 }

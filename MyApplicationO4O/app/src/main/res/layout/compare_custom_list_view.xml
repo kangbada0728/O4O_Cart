@@ -15,7 +15,7 @@
 
         android:layout_height="wrap_content"
 
-        android:background="#666666">
+        >
 
 
         <ImageView
@@ -52,7 +52,7 @@
 
                 android:elegantTextHeight="false"
 
-                android:textColor="#ffffff"
+
 
                 android:textSize="15dp"
 
@@ -75,7 +75,6 @@
 
                     android:gravity="center"
 
-                    android:textColor="#ffaf40"
 
                     android:textSize="14dp"/>
 
