@@ -106,7 +106,7 @@ def comparing_product(request):
         sorted_items_form['item_info']['expire_date'] = str(item.expire_date)
         sorted_items_form['item_info']['price'] = item.item.price
 #--
-        
+
         ad_data = Ad_Info.objects.all()
         i = 0
         for check in ad_data:
