@@ -4,9 +4,8 @@ def gnb_menus(request):
             'name': '고객',
             'sub_menus': [
                 {'name': '구매정보', 'url': '/admin/cart/pur_history/'},
-                {'name': '이동정보', 'url': '/admin/cart/mv_history/'},
                 {'name': '고객정보', 'url': '/admin/cart/customer_info/'},
-                {'name': '카트', 'url': '/admin/cart/cart_info/'},
+                {'name': '카트정보', 'url': '/admin/cart/cart_info/'},
             ]
         },
         {
@@ -26,10 +25,17 @@ def gnb_menus(request):
             ]
         },
         {
+            'name': '시각화',
+            'sub_menus': [
+                {'name': '고객 이동경로', 'url': '/draw/'},
+            ]
+        },
+        {
             'name': '기타',
             'sub_menus': [
-                {'name': '카메라', 'url': '/admin/cart/camera_info/'},
-                {'name': '마트구획', 'url': '/admin/cart/matrix/'},
+                {'name': '이동정보관리', 'url': '/admin/cart/mv_history/'},
+                {'name': '카메라 관리', 'url': '/admin/cart/camera_info/'},
+                {'name': '영역 설정', 'url': '/admin/cart/matrix/'},
             ]
         }
     ]

@@ -52,9 +52,6 @@ data_json ={
 
 @csrf_exempt
 def index(request):
-
-
-
     visualize(data_json)
     print("manager web index")
     return render(request, 'draw/index.html', {})
@@ -93,11 +90,13 @@ def draw(request):
     send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
     data_json = mv_list
     print("#######################################################")
-    print(send_json[0])
+    print(data_json)
     #data_json = send_json
     #----------------
     visualize(data_json)
-    return HttpResponse('success')
+
+    return render(request, 'draw/mv_history.html')
+    #return HttpResponse('success')
 
     #return render(request, 'managerweb/index.html', {})
 

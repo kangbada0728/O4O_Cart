@@ -189,12 +189,17 @@ class Coupon_Item_Info_Admin(admin.ModelAdmin):
     list_display = ('serial_num', 'coupon_item', 'coupon_use', 'customer',)
     search_fields = ('serial_num', 'coupon_item', 'coupon_use', 'customer',)
 
-
-
+class temp(admin.ModelAdmin):
+    list_per_page = 10
+    list_display = ('id', 'age', 'sex', 'note',)
+    list_filter = ('age', 'sex',)
+    search_fields = ('id',)
+    ordering = ('-age',)
+    #return TemplateResponse(request, "admin/mv_history.html")
 #admin.site.site_title = 'test1'
 #admin.site.site_header = 'O4O Cart'
 #admin.site.index_title = '마트 관리 도구'
-
+#admin.site.register(Customer_Info, temp)
 admin.site.register(Sex_Info)
 admin.site.register(Customer_Info, Customer_info_Admin)
 admin.site.register(Cart_Info, Cart_info_Admin)
