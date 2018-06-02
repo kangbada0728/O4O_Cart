@@ -121,23 +121,32 @@ def comparing_product(request):
                 sorted_items_form[name]['price'] = check.item.price
             i = i + 1
 
-        items_list = Items.objects.get(sort=item_sort)
+
+        items_lista = Items.objects.get(sort=item_sort)
         item_list = {}
 
-        for check in items_list:
+        for check in items_lista:
             item_list[check.name] = 0
 
-        pur_data = Pur_History.objects.values('item').values('item').get(sort=item_sort)
+        # pur_data = Pur_History.objects.values('item').values('item').get(sort=item_sort)
+        #
+        # for check in pur_data:
+        #     item_list[check.name] = item_list[check.name] + 1
+
+        pur_data = Pur_History.objects.all()
 
         for check in pur_data:
-            item_list[check.name] = item_list[check.name] + 1
+            if check.item.item.sort == item_sort:
+                item_list[check.item.item.name] += 1
+
+
 
         sorted_popular_items = sorted(item_list.items(), key=operator.itemgetter(1))
 
         i = 0
         for check in sorted_popular_items:
             name = 'popular' + str(i + 1)
-            sorted_items_form[name]['name'] = check[0]
+            sorted_items_form[name]['name'] = check
             i = i + 1
 
         i = 0
@@ -171,8 +180,9 @@ def receive_cartqrcode(request):  # qr코드 일련번호, 카메라번호, x, y
         data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
         data.save()
 
+        area_in = Matrix.objects.get(Q(start_x__lte=coor_x) | Q(start_y__lte=coor_y) | Q(end_x__gte=coor_x) | Q(end_y__gte=coor_y))
 
-        ad_data = Ad_Info.objects.get(Q(start_x__lte=coor_x) | Q(start_y__lte=coor_y) | Q(end_x__gte=coor_x) | Q(end_y__gte=coor_y))
+        ad_data = Ad_Info.objects.get(location=area_in)
 
         def tree():
             return collections.defaultdict(tree)
@@ -248,6 +258,19 @@ def send_mvhistory(request):
         send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
+
+
+@csrf_exempt
+def cart_paring(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        cart_serial = request_data['serial']
+        cus_id = request_data['id']
+
+        Cart_Info.objects.filter(serial_num=cart_serial).update(owner=cus_id)
+
 
 
 def cart_add(request):

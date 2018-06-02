@@ -152,10 +152,10 @@ class Mv_History_Admin(admin.ModelAdmin):
 
 class Ad_info_Admin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ('item', 'camera_num', 'start_x', 'start_y', 'end_x', 'end_y',)
-    list_filter = ('item', 'camera_num',)
-    search_fields = ('item', 'camera_num',)
-    ordering = ('item', 'camera_num',)
+    list_display = ('item', 'camera_num', 'location',)
+    list_filter = ('item', 'camera_num','location',)
+    search_fields = ('item', 'camera_num', 'location',)
+    ordering = ('item', 'camera_num', 'location',)
 
 class Ad_checker_Admin(admin.ModelAdmin):
     list_per_page = 100
