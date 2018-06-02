@@ -35,7 +35,6 @@ class Cart_Info(models.Model):
         verbose_name_plural="카트"
         verbose_name="카트"
     num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='추가할 카트수')
-    #num = models.AutoField(primary_key=True, null=False, default=1, verbose_name='카트번호')
     serial_num = models.CharField(max_length=100, unique=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
     owner = models.ForeignKey(Customer_Info, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='소유자')
 
@@ -82,7 +81,6 @@ class Pur_History(models.Model):
     class Meta:
         verbose_name_plural="고객 구매정보"
         verbose_name = "고객 구매정보"
-    #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
     time = models.DateTimeField(auto_now_add=True,verbose_name='구매시간', primary_key=True, null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='구매고객')
     item = models.ForeignKey(Item_Info, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
@@ -103,7 +101,6 @@ class Mv_History(models.Model):
     class Meta:
         verbose_name_plural="고객 이동정보"
         verbose_name="고객 이동정보"
-    #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
     time = models.PositiveIntegerField(default=0, verbose_name='이동한 시간', null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='이동고객')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
@@ -116,10 +113,8 @@ class Ad_Info(models.Model):
     class Meta:
         verbose_name_plural="광고"
         verbose_name="광고"
-    #num = models.AutoField(primary_key=True, default=1, verbose_name='번호')
-    #num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='번호', default=1)
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
-    link_info = models.CharField(max_length=200, null=False, verbose_name='광고영상 링크')
+    link_info = models.CharField(default="", max_length=200, null=False, verbose_name='광고영상 링크')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
     location = models.ForeignKey(Matrix, on_delete=models.SET_NULL, null=True, verbose_name='구역')
 
