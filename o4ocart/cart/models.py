@@ -121,7 +121,7 @@ class Ad_Info(models.Model):
     item = models.ForeignKey(Items, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
     link_info = models.CharField(max_length=200, null=False, verbose_name='광고영상 링크')
     camera_num = models.ForeignKey(Camera_Info, on_delete=models.CASCADE, null=False, verbose_name='카메라 번호')
-    location = models.ForeignKey(Matrix, on_delete=models.SET_NULL, null=False, verbose_name='구역')
+    location = models.ForeignKey(Matrix, on_delete=models.SET_NULL, null=True, verbose_name='구역')
 
 
 class Ad_checker(models.Model):
