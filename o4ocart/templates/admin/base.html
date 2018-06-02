@@ -1,108 +1,108 @@
-{% load i18n static %}<!DOCTYPE html>
-{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
-<head>
-<title>O4O Cart 관리자 웹페이지 | Django Site admin</title>
-<!--
-<title>{% block title %}{% endblock %}</title>
--->
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
-{% block extrastyle %}{% endblock %}
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
-{% block extrahead %}{% endblock %}
-{% block responsive %}
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}" />
-    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}" />{% endif %}
-{% endblock %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-</head>
-{% load i18n %}
+ 	{% load i18n static %}<!DOCTYPE html>
+	{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+	<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+	<head>
+	<title>O4O Cart 관리자 웹페이지 | Django Site admin</title>
+	<!--
+	<title>{% block title %}{% endblock %}</title>
+	-->
+	<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+	{% block extrastyle %}{% endblock %}
+	{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+	{% block extrahead %}{% endblock %}
+	{% block responsive %}
+	    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	    <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}" />
+	    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}" />{% endif %}
+	{% endblock %}
+	{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+	</head>
+	{% load i18n %}
+	<body  class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+	  data-admin-utc-offset="{% now "Z" %}">
+	 <!--
+	<iframe src="http://127.0.0.1:5601/app/kibana#/visualize/create?embed=true&type=area&indexPattern=logstash-*&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now%2Fd,mode:quick,to:now%2Fd))&_a=(filters:!(),linked:!f,query:(query_string:(analyze_wildcard:!t,query:'*')),uiState:(vis:(legendOpen:!t)),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:x,order:desc,orderBy:_term,size:5),schema:segment,type:terms)),listeners:(),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,defaultYExtents:!f,interpolate:linear,legendPosition:right,mode:stacked,scale:linear,setYExtents:!f,times:!()),title:'New+Visualization',type:area))" height="600" width="800"></iframe>
+	-->
 
-<body  class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
-  data-admin-utc-offset="{% now "Z" %}">
- <!--
-<iframe src="http://127.0.0.1:5601/app/kibana#/visualize/create?embed=true&type=area&indexPattern=logstash-*&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now%2Fd,mode:quick,to:now%2Fd))&_a=(filters:!(),linked:!f,query:(query_string:(analyze_wildcard:!t,query:'*')),uiState:(vis:(legendOpen:!t)),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:x,order:desc,orderBy:_term,size:5),schema:segment,type:terms)),listeners:(),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,defaultYExtents:!f,interpolate:linear,legendPosition:right,mode:stacked,scale:linear,setYExtents:!f,times:!()),title:'New+Visualization',type:area))" height="600" width="800"></iframe>
--->
-		
-<!-- Container -->
-<div id="container">
+	<!-- Container -->
+	<div id="container">
 
-    {% if not is_popup %}
-    <!-- Header -->
-    <div id="header">
-        <div id="branding">
-        {% block branding %}{% endblock %}
-        </div>
-        {% block usertools %}
-        {% if has_permission %}
-        <div id="user-tools">
-            {% block welcome-msg %}
-                {% trans 'Welcome,' %}
-                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
-            {% endblock %}
-            {% block userlinks %}
-			<!---
-                {% if site_url %}
-                    <a href="{{ site_url }}">{% trans 'View site' %}</a> /
-                {% endif %}
-				-->
-                {% if user.is_active and user.is_staff %}
-                    {% url 'django-admindocs-docroot' as docsroot %}
-                    {% if docsroot %}
-                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
-                    {% endif %}
-                {% endif %}
-                {% if user.has_usable_password %}
-                <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
-                {% endif %}
-                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
-            {% endblock %}
-        </div>
-        {% endif %}
-        {% endblock %}
-        {% block nav-global %}{% endblock %}
-    </div>
-    <!-- END Header -->
-    {% block breadcrumbs %}
-    <div class="breadcrumbs">
-    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-    {% if title %} &rsaquo; {{ title }}{% endif %}
-    </div>
-    {% endblock %}
-    {% endif %}
+	    {% if not is_popup %}
+	    <!-- Header -->
+	    <div id="header">
+	        <div id="branding">
+	        {% block branding %}{% endblock %}
+	        </div>
+	        {% block usertools %}
+	        {% if has_permission %}
+	        <div id="user-tools">
+	            {% block welcome-msg %}
+	                {% trans 'Welcome,' %}
+	                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+	            {% endblock %}
+	            {% block userlinks %}
+				<!---
+	                {% if site_url %}
+	                    <a href="{{ site_url }}">{% trans 'View site' %}</a> /
+	                {% endif %}
+					-->
+	                {% if user.is_active and user.is_staff %}
+	                    {% url 'django-admindocs-docroot' as docsroot %}
+	                    {% if docsroot %}
+	                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+	                    {% endif %}
+	                {% endif %}
+	                {% if user.has_usable_password %}
+	                <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+	                {% endif %}
+	                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+	            {% endblock %}
+	        </div>
+	        {% endif %}
+	        {% endblock %}
+	        {% block nav-global %}{% endblock %}
+	    </div>
+	    <!-- END Header -->
+	    {% block breadcrumbs %}
+	    <div class="breadcrumbs">
+	    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+	    {% if title %} &rsaquo; {{ title }}{% endif %}
+	    </div>
+	    {% endblock %}
+	    {% endif %}
 
-    {% block messages %}
-        {% if messages %}
-        <ul class="messagelist">{% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
-        {% endfor %}</ul>
-        {% endif %}
-    {% endblock messages %}
+	    {% block messages %}
+	        {% if messages %}
+	        <ul class="messagelist">{% for message in messages %}
+	          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+	        {% endfor %}</ul>
+	        {% endif %}
+	    {% endblock messages %}
 
-    <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block pretitle %}
-		<h1>HIHIHI</h1>
-		{% endblock %}
-			{% block content_title %}
-				{% if title %}<h1>O4O Cart 관리자 웹페이지입니다</h1>{% endif %}{% endblock %}
-        {% block content %}
+	    <!-- Content -->
+	    <div id="content" class="{% block coltype %}colM{% endblock %}">
+	        {% block pretitle %}
+			{% endblock %}
+				{% block content_title %}
+					{% if title %}{% endif %}{% endblock %}
+	        {% block content %}
 
-        {% block object-tools %}{% endblock %}
+	        {% block object-tools %}{% endblock %}
 
-        {{ content }}
+	        {{ content }}
 
-        {% endblock %}
-				<img src ={% static "admin\image\main.png" %} height="480" width="800">
-        {% block sidebar %}{% endblock %}
-        <br class="clear" />
-    </div>
-    <!-- END Content -->
+	        {% endblock %}
+          <!--
+					<img src ={% static "admin\image\main.png" %} height="480" width="800">
+        -->
+	        {% block sidebar %}{% endblock %}
+	        <br class="clear" />
+	    </div>
+	    <!-- END Content -->
 
-    {% block footer %}<div id="footer"></div>{% endblock %}
-</div>
-<!-- END Container -->
+	    {% block footer %}<div id="footer"></div>{% endblock %}
+	</div>
+	<!-- END Container -->
 
-</body>
-</html>
+	</body>
+	</html>
