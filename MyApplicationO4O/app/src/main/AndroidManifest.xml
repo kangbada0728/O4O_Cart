@@ -32,10 +32,10 @@
         <activity android:name=".Menu"></activity>
         <activity android:name=".Push"></activity>
         <activity android:name=".Coupon"></activity>
-        <activity android:name=".ClickCoupon"></activity>
         <activity android:name=".BarcodeScan"></activity>
         <activity android:name=".Compare"></activity>
-
+        <activity android:name=".Popular"></activity>
+        <activity android:name=".Swipe_Compare" />
 
         <service     android:name=".MyFirebaseMessagingService">
             <intent-filter>

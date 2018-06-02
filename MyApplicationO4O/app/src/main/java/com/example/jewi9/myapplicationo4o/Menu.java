@@ -65,8 +65,7 @@ public class Menu extends AppCompatActivity
                 @Override
                 protected void onPostExecute(Object o) {
                     super.onPostExecute(o);
-                    Intent intent = new Intent( Menu.this, Compare.class);
-                    Log.d("INTENT@@@@@@", "INTENT@@@@@@ ");
+                    Intent intent = new Intent( Menu.this, Swipe_Compare.class);
                     startActivity(intent);
 
                 }
@@ -91,7 +90,6 @@ public class Menu extends AppCompatActivity
 
                     try {
                         product_jsonobject = new JSONObject(result);
-                        JSONObject item_info = (JSONObject)product_jsonobject.get("item_info");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

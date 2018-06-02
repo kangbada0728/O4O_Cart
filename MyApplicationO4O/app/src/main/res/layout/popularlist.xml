@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center"
-        android:text="가격 비교" />
+        android:text="인기 상품" />
     <ListView
         android:id="@+id/listview1"
         android:layout_width="match_parent"

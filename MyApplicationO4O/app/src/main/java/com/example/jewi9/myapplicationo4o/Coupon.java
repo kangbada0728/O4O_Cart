@@ -2,6 +2,7 @@ package com.example.jewi9.myapplicationo4o;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,14 +26,23 @@ public class Coupon extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.couponlist);
 
+        ListViewAdapter_Coupon adapter;
         listView =(ListView)findViewById(R.id.List_view);
+        adapter = new ListViewAdapter_Coupon() ;
+
+        // 리스트뷰 참조 및 Adapter달기
+        listView.setAdapter(adapter);
+
 
         Menu myMenu = new Menu();
         Log.d("Coupon@@@@@@", "CouponARray in Coupon @@@@@@: " + myMenu.coupon_jsonobject);
+        // 첫 번째 아이템 추가.
+        adapter.addItem(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background),
+                "Account Box Black 36dp","aaa") ;
 
         //Menu.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        for(int i=0;i<myMenu.coupon_jsonobject.length();i++){
+        /*for(int i=0;i<myMenu.coupon_jsonobject.length();i++){
             try {
                 HashMap<String,String> InputData1 = new HashMap<>();
                 // Log.d("Coupon@@@@@@", "coupon"+Integer.toString(i+1));
@@ -48,17 +58,17 @@ public class Coupon extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }
+        }*/
         /*adapter생성*/
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this,Data,android.R.layout.simple_list_item_2,new String[]{"name","datetime"},new int[]{android.R.id.text1,android.R.id.text2});
-        listView.setAdapter(simpleAdapter);
+        //SimpleAdapter simpleAdapter = new SimpleAdapter(this,Data,android.R.layout.simple_list_item_2,new String[]{"name","datetime"},new int[]{android.R.id.text1,android.R.id.text2});
+        //listView.setAdapter(simpleAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(),ClickCoupon.class);
                 startActivity(intent);
             }
-        });
+        });*/
     }
 }
