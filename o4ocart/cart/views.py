@@ -94,24 +94,19 @@ def comparing_product(request):
         serial = request_data['serial']
 
         item_sort = Item_Info.objects.get(serial_num=serial).item.sort
-        sort_items = Items.objects.filter(sort=item_sort).all()
-
-        sorted_items = sorted(sort_items, key=lambda x: x.price, reverse=False)
 
         def tree():
             return collections.defaultdict(tree)
 
         sorted_items_form = tree()
-
+#--
         item = Item_Info.objects.get(serial_num=serial)
-
         sorted_items_form['item_info']['item_name'] = item.item.name
         sorted_items_form['item_info']['inbound_date'] = str(item.inbound_date)
         sorted_items_form['item_info']['expire_date'] = str(item.expire_date)
         sorted_items_form['item_info']['price'] = item.item.price
-
+#--
         ad_data = Ad_Info.objects.all()
-
         i = 0
         for check in ad_data:
             if check.item.sort == item_sort:
@@ -120,41 +115,33 @@ def comparing_product(request):
                 sorted_items_form[name]['inventory'] = check.item.inventory
                 sorted_items_form[name]['price'] = check.item.price
             i = i + 1
+#--
+        same_sort_items = Items.objects.filter(sort=item_sort)
+
+        same_sort_items_list = {}
+
+        for check in same_sort_items:
+            same_sort_items_list.update({check.name: 0})
+
+        for check in Pur_History.objects.all():
+            if check.item.item.sort == item_sort:
+                same_sort_items_list[check.item.item.name] = same_sort_items_list[check.item.item.name] + 1
+
+        sorted_pur_items = sorted(same_sort_items_list, key=lambda x: x[1], reverse=False)
 
 
+        i=0
+        for check in sorted_pur_items:
+            name = 'popular' + str(i+1)
+            sorted_items_form[name]['name'] = check[0:]
+            i=i+1
 
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#--
+        items_list = Items.objects.filter(sort=item_sort).all()
+        sorted_items_list = sorted(items_list, key=lambda x: x.price, reverse=False)
 
         i = 0
-        for check in sorted_items:
+        for check in sorted_items_list:
             name = 'item' + str(i + 1)
             sorted_items_form[name]['name'] = check.name
             sorted_items_form[name]['inventory'] = check.inventory
