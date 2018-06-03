@@ -6,12 +6,13 @@ from django.contrib.auth.models import User
 import uuid
 # Create your models here.
 
+
+
 class Sex_Info(models.Model):
     class Meta:
         verbose_name_plural="성별"
         verbose_name="성별"
     sex = models.CharField(max_length=20, null=False, primary_key=True, default="", verbose_name='성별')
-
 
 class Customer_Info(models.Model):
     class Meta:
@@ -35,7 +36,7 @@ class Cart_Info(models.Model):
         verbose_name_plural="카트"
         verbose_name="카트"
     num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='추가할 카트수')
-    serial_num = models.CharField(max_length=100, unique=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
+    serial_num = models.CharField(max_length=100, unique=True, default=uuid.uuid1, editable=True, verbose_name='일련번호')  # 9자리까지 가능
     owner = models.ForeignKey(Customer_Info, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='소유자')
 
 

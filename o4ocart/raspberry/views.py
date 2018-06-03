@@ -10,7 +10,7 @@ def index(request):
 @csrf_exempt
 def upload_file(request):
     if request.method == 'POST':
-        print(request)
+        print("IMG RECEIVED")
         data = request.FILES['content'] # or self.files['image'] in your form
         name = request.GET['image_name']
         #print(name)

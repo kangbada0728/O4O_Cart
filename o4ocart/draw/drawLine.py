@@ -71,11 +71,13 @@ def getXY(data_json):
     #showImage(x)
 
 def drawTime(_list_xy):
+
     font_order = ImageFont.truetype(font_path,10)
     font_time = ImageFont.truetype(font_path,10)
     for xy_order in range(0, len(_list_xy)):
         str_xy_order = str(xy_order)
         str_time = str(_list_xy[xy_order]["time"])
+        print(str_time)
         time_hour = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).hour
         time_min = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).minute
         time_sec = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).second
@@ -121,7 +123,7 @@ def showImage(_list_xy):
     draw.flush()
     drawTime(_list_xy)
     #im.show()
-    im.save('out.png')
+    im.save('draw\\result\\out.png')
 
 def drawPoints(list_xy):
     print("drawPoints")
@@ -136,7 +138,7 @@ def drawPoints(list_xy):
     draw.flush()
     drawTime(list_xy)
     #im.show()
-    im.save('out.png')
+    im.save('draw\\result\\out.png')
 
 def visualize(data_json):
     print("visualize")
