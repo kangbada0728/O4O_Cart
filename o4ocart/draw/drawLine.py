@@ -41,8 +41,8 @@ def getXY(data_json):
 
 def drawTime(_list_xy):
 
-    font_order = ImageFont.truetype(font_path,10)
-    font_time = ImageFont.truetype(font_path,10)
+    font_order = ImageFont.truetype(font_path,20)
+    font_time = ImageFont.truetype(font_path,20)
     for xy_order in range(0, len(_list_xy)):
         str_xy_order = str(xy_order)
         str_time = str(_list_xy[xy_order]["time"])
@@ -52,16 +52,16 @@ def drawTime(_list_xy):
         time_sec = datetime.datetime.fromtimestamp(_list_xy[xy_order]["time"]).second
         str_time = str(time_hour)+"시 "+str(time_min)+"분 "+str(time_sec)+"초"
         print(str_time)
-        drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]),str_xy_order ,fill = (0,0,255), font = font_order)
-        drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]+50),str_time ,fill = (0,0,255), font = font_time)
-
+        drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]),str_xy_order ,fill = (255,255,255), font = font_order)
+        drawT.text((_list_xy[xy_order]["x"],_list_xy[xy_order]["y"]+50),str_time ,fill = (160,120,180), font = font_time)
+        #255가 흰샥
 
 
 def showImage(_list_xy):
 
     print(_list_xy)
-    pen = aggdraw.Pen((190,150,130))
-    brush = aggdraw.Brush((190,150,110))
+    pen = aggdraw.Pen((255,255,255))
+    brush = aggdraw.Brush((255,255,255))
     outline = aggdraw.Pen((190,170,130),5)
 
 
@@ -77,7 +77,7 @@ def showImage(_list_xy):
             p3 = str(_list_xy[xy_order*3+3]["x"]-p0_x)+","+str(_list_xy[xy_order*3+3]["y"]-p0_y)
             draw.ellipse((p0_x-3,p0_y-3,p0_x+3,p0_y+3),pen)
 
-        bezier = "m " + p0 +"c "+p1+p2+p3
+        bezier = "m " + p0 +"c "+ p1 + p2 + p3
         print(bezier)
         symbol = aggdraw.Symbol(bezier)
         draw.symbol((0,0), symbol, outline)
@@ -90,9 +90,9 @@ def showImage(_list_xy):
 def drawPoints(list_xy):
     print("drawPoints")
     print(list_xy)
-    pen = aggdraw.Pen((190,150,130))
-    brush = aggdraw.Brush((190,150,110))
-    outline = aggdraw.Pen((190,170,130),5)
+    pen = aggdraw.Pen((0,0,0))
+    brush = aggdraw.Brush((0,0,0))
+    outline = aggdraw.Pen((0,0,0),5)
     for xy_order in range(0, (len(list_xy))):
         p_x = list_xy[xy_order]["x"]
         p_y = list_xy[xy_order]["y"]
