@@ -154,50 +154,40 @@ def comparing_product(request):
 
         return HttpResponse(send_json)
 
-
 @csrf_exempt
-def receive_cartqrcode(request):  # qr코드 일련번호, 카메라번호, x, y
-    if request.method == 'POST':
-        request_json = (request.body).decode('utf-8')
-        request_data = json.loads(request_json)
+def receive_cartqrcode(serial, camera_number, x, y):  # qr코드 일련번호, 카메라번호, x, y
 
-        #time_num = int(request_data['time'])
-        cart_serial = str(request_data['serial'])
-        camera_num = int(request_data['camera'])
-        coor_x = int(request_data['x'])
-        coor_y = int(request_data['y'])
+    cart_serial = serial
+    camera_num = camera_number
+    coor_x = x
+    coor_y = y
 
-        cart_customer = Cart_Info.objects.get(serial_num=cart_serial).owner
-        camera = Camera_Info.objects.get(num=camera_num)
+    cart_customer = Cart_Info.objects.get(serial_num=cart_serial).owner
+    camera = Camera_Info.objects.get(num=camera_num)
 
-        #data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
-        #data.save()
+    area_in = Matrix.objects.get(Q(start_x__lte=coor_x) | Q(start_y__lte=coor_y) | Q(end_x__gte=coor_x) | Q(end_y__gte=coor_y))
 
-        area_in = Matrix.objects.get(Q(start_x__lte=coor_x) | Q(start_y__lte=coor_y) | Q(end_x__gte=coor_x) | Q(end_y__gte=coor_y))
+    ad_data = Ad_Info.objects.get(location=area_in)
 
-        ad_data = Ad_Info.objects.get(location=area_in)
+    def tree():
+        return collections.defaultdict(tree)
 
-        def tree():
-            return collections.defaultdict(tree)
+    ad_links = tree()
 
-        ad_links = tree()
+    i = 0
+    for check in ad_data:
+        ad_check = Ad_checker.objects.get(Q(ad=check) & Q(customer=cart_customer) & Q(show_date=date.today))
+        if ad_check.objects.count()==0:
+            name = 'ad'+str(i+1)
+            ad_links[name]['link'] = check.link_info
+            ad_links[name]['item'] = check.item.name
+            i = i+1
 
-        i=0
-        for check in ad_data:
-            ad_check = Ad_checker.objects.get(Q(ad=check) & Q(customer=cart_customer) & Q(show_date=date.today))
-            if ad_check.objects.count()==0:
-                name = 'ad'+str(i+1)
-                ad_links[name]['link'] = check.link_info
-                ad_links[name]['item'] = check.item.name
-                i=i+1
-
-
-        if len(ad_links) != 0:
-            send_json = json.dumps(ad_links, ensure_ascii=False)
-            push_service.notify_single_device(registration_id=cart_customer.reg_id, message_title='ad', message_body=send_json, data_message=send_json)
-            data = Ad_checker(ad=ad_data, customer=cart_customer, show_date=date.today)
-            data.save()
-
+    if len(ad_links) != 0:
+        send_json = json.dumps(ad_links, ensure_ascii=False)
+        push_service.notify_single_device(registration_id=cart_customer.reg_id, message_title='ad', message_body=send_json, data_message=send_json)
+        data = Ad_checker(ad=ad_data, customer=cart_customer, show_date=date.today)
+        data.save()
 
 
 @csrf_exempt

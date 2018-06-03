@@ -11,6 +11,7 @@ from logstash_formatter import LogstashFormatterV1
 import datetime
 from cart.models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix, Mv_History
 import collections
+from cart.views import receive_cartqrcode
 
 def detectQR(image_name):
     host = '127.0.0.1'
@@ -57,6 +58,7 @@ def detectQR(image_name):
             camera = Camera_Info.objects.get(num=camera_num)
             data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
             data.save()
+            receive_cartqrcode(serial,camera_num,coor_x,coor_y)
 
             print("DB SAVED")
 
