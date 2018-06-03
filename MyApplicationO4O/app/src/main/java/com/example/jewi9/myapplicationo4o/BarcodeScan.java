@@ -49,4 +49,5 @@ public class BarcodeScan extends Activity implements DecoratedBarcodeView.TorchL
     public void onTorchOn() { }
     @Override
     public void onTorchOff() { }
+
 }

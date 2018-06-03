@@ -2,11 +2,18 @@ package com.example.jewi9.myapplicationo4o;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import org.apache.http.client.ClientProtocolException;
@@ -29,6 +36,12 @@ import java.io.UnsupportedEncodingException;
 
 public class Menu extends AppCompatActivity
 {
+    /*메뉴를 만들기위한 변수들*/
+    private ListView menuList;
+    private FrameLayout menuContainer;
+    private DrawerLayout menuDrawer;
+    private final String[] menuItems = {"카트 페어링","가격 비교", "보유 쿠폰","구매 내역"};
+
     public static JSONObject coupon_jsonobject;
     public static JSONObject product_jsonobject;
     String barcode=null;
@@ -37,17 +50,20 @@ public class Menu extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
-    }
 
+
+        menuList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
+        menuContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
+
+        menuDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
+        menuList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems));
+        menuList.setOnItemClickListener(new DrawerItemClickListener());
+    }
 
     public void onClickCompare(View view) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setCaptureActivity(BarcodeScan.class);
         integrator.initiateScan();
-
-        //Intent intent = new Intent(Menu.this, Compare.class);
-        //startActivity(intent);
-
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent)//바코드
@@ -124,7 +140,6 @@ public class Menu extends AppCompatActivity
         //서버에 요청을 보낸다.(보낼값: token, id)
         class BtnAsyncTask extends AsyncTask {
             String result="";
-            //String url = "http://192.168.31.67:8000/requestCoupon";//나중에 원격서버주소로 변경!!!!!!!!!
             String url = "http://192.168.17.209:8000/cart/coupon_check/";
 
             @Override
@@ -180,5 +195,35 @@ public class Menu extends AppCompatActivity
         }
         BtnAsyncTask async = new BtnAsyncTask();
         async.execute();
+    }
+    public void onClickPairing(View view)
+    {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setCaptureActivity(CartPairing.class);
+        integrator.initiateScan();
+    }
+
+
+    private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            switch (position) {
+                case 0:
+                    onClickPairing(view);
+                    break;
+                case 1:
+                    onClickCompare(view);
+                    break;
+                case 2:
+                    onClickCoupon(view);
+                    break;
+                case 3:
+
+                    break;
+
+            }
+            menuDrawer.closeDrawer(menuList);
+        }
     }
 }

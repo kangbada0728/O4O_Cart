@@ -36,6 +36,8 @@
         <activity android:name=".Compare"></activity>
         <activity android:name=".Popular"></activity>
         <activity android:name=".Swipe_Compare" />
+        <activity android:name=".CartPairing"/>
+        <activity android:name=".CaptureActivityAnyOrientation"/>
 
         <service     android:name=".MyFirebaseMessagingService">
             <intent-filter>

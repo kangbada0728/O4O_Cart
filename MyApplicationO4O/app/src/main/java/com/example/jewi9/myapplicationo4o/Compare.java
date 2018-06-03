@@ -31,12 +31,6 @@ public class Compare extends AppCompatActivity{
 
         Log.d("prodcutjson@@@@@@", "prodcutjson@@@@@@ " + menu.product_jsonobject);
 
-        /*try {
-            JSONObject item_info = (JSONObject)menu.product_jsonobject.get("item_info");
-            Log.d("ItmeInfo@@@@@@", "ItemInfo@@@@@@ " + item_info);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
         for(int i = 0 ;i<menu.product_jsonobject.length()-1;i++){
             try {
                 //product에 item1,2... 들을 각각 넣는다.
