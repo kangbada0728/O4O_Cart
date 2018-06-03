@@ -205,16 +205,18 @@ def send_coupon(request):
 
         item_name = Items.objects.get(name=result_item)
         coupon_sort = Coupons_Item.objects.get(item=item_name)
-        coupon_send = Coupon_Item_Info.objects.filter(Q(coupon_item=coupon_sort) & Q(coupon_use=False)).first()
 
-
-        if len(coupon_send) != 0:
-            coupon_serial = coupon_send.serial_num
-            cus = Customer_Info.objects.get(id=result_id)
-            Coupon_Item_Info.objects.filter(serial_num=coupon_serial).update(customer=cus)
-            return HttpResponse('Receive Coupon')
-        else:
+        try:
+            coupon_test = Coupon_Item_Info.objects.filter(Q(coupon_item=coupon_sort) & Q(coupon_use=False))
+        except coupon_test.count()==0:
             return HttpResponse('No Coupon')
+
+        coupon_send = coupon_test.first()
+
+        coupon_serial = coupon_send.serial_num
+        cus = Customer_Info.objects.get(id=result_id)
+        Coupon_Item_Info.objects.filter(serial_num=coupon_serial).update(customer=cus)
+        return HttpResponse('Receive Coupon')
 
 
 
@@ -262,6 +264,7 @@ def cart_paring(request):
 
         Cart_Info.objects.filter(serial_num=cart_serial).update(owner=owner_ob)
 
+        return HttpResponse(True)
 
 @csrf_exempt
 def change_coupon_state(request):
@@ -276,6 +279,8 @@ def change_coupon_state(request):
             serial = str(request_data['serial'+str(i+1)])
             Coupon_Item_Info.objects.filter(serial_num=serial).update(coupon_use=None)
             i = i + 1
+
+        return HttpResponse(True)
 
 
 @csrf_exempt
