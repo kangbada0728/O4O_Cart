@@ -332,10 +332,10 @@ def do_payment(request):
         for check in not_use_coupons:
             check.coupon_use = False
 
+        Cart_Info.objects.filter(owner=customer_id).update(owner=None)
+
         push_service.notify_single_device(registration_id=customer_id.reg_id, message_title='payment',message_body=final_payment_amount)
-
         send_json = json.dumps(final_payment_amount, ensure_ascii=False)
-
         return HttpResponse(send_json)
 
 
