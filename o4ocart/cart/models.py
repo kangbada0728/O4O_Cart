@@ -35,7 +35,7 @@ class Cart_Info(models.Model):
         verbose_name_plural="카트"
         verbose_name="카트"
     num = models.PositiveIntegerField(primary_key=True, null=False, verbose_name='추가할 카트수')
-    serial_num = models.CharField(max_length=100, unique=True, default=uuid.uuid1, editable=False, verbose_name='일련번호')  # 9자리까지 가능
+    serial_num = models.CharField(max_length=100, unique=True, default=uuid.uuid1, editable=True, verbose_name='일련번호')  # 9자리까지 가능
     owner = models.ForeignKey(Customer_Info, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='소유자')
 
 
@@ -149,5 +149,5 @@ class Coupon_Item_Info(models.Model):
         verbose_name="상품 쿠폰 재고"
     serial_num = models.CharField(max_length=100, unique=True, primary_key=True, default=uuid.uuid1, editable=False, verbose_name='일련번호') # 9자리까지 가능
     coupon_item = models.ForeignKey(Coupons_Item, on_delete=models.CASCADE, null=False, verbose_name='쿠폰이름')
-    coupon_use = models.BooleanField(null=False, default=False, verbose_name='사용여부')
+    coupon_use = models.NullBooleanField(null=True, default=False, verbose_name='사용여부')
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=True, blank=True, verbose_name='소유자')

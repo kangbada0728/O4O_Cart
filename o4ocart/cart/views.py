@@ -8,8 +8,9 @@ import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm, MatrixForm
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 import operator
+from django.utils import timezone
 
 from pyfcm import FCMNotification
 
@@ -64,7 +65,7 @@ def coupon_check(request):
 
         id = request_data['id']
 
-        coupons = Coupon_Item_Info.objects.filter(customer=id, coupon_use=False).all()
+        coupons = Coupon_Item_Info.objects.filter(Q(customer=id) & Q(coupon_use=False))
 
         def tree():
             return collections.defaultdict(tree)
@@ -73,12 +74,13 @@ def coupon_check(request):
 
         i = 0
         for check in coupons:
-            name = 'coupon' + str(i + 1)
-            coupon_form[name]['serial_num'] = check.serial_num
-            coupon_form[name]['name'] = check.coupon_item.item.name
-            coupon_form[name]['discount'] = check.coupon_item.discount_rate
-            coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date().isoformat())
-            i = i + 1
+            if check.coupon_item.end_date > timezone.now():
+                name = 'coupon' + str(i + 1)
+                coupon_form[name]['serial_num'] = check.serial_num
+                coupon_form[name]['name'] = check.coupon_item.item.name
+                coupon_form[name]['discount'] = check.coupon_item.discount_rate
+                coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date().isoformat())
+                i = i + 1
 
         send_json = json.dumps(coupon_form, ensure_ascii=False)
 
@@ -263,6 +265,80 @@ def cart_paring(request):
         cus_id = request_data['id']
 
         Cart_Info.objects.filter(serial_num=cart_serial).update(owner=cus_id)
+
+
+@csrf_exempt
+def change_coupon_state(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        count = len(request_data)
+
+        i = 0
+        while i < count:
+            serial = str(request_data['serial'+str(i+1)])
+            Coupon_Item_Info.objects.filter(serial_num=serial).update(coupon_use=None)
+            i = i + 1
+
+
+@csrf_exempt
+def do_payment(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        id_temp = request_data['id']
+        customer_id = Customer_Info.objects.get(id=id_temp)
+        things_to_buy_count = len(request_data) - 1
+        final_payment_amount = 0
+
+        coupons_temp = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
+
+        def tree():
+            return collections.defaultdict(tree)
+
+        coupons_list = tree()
+        i = 0
+        for check in coupons_temp:
+            name = 'coupon' + str(i+1)
+            coupons_list[name]['serial_num'] = check.serial_num
+            coupons_list[name]['item'] = check.coupon_item.item
+            coupons_list[name]['discount_rate'] = check.coupon_item.discount_rate
+            coupons_list[name]['use'] = False
+            i = i + 1
+
+        i = 0
+        while i < things_to_buy_count:
+            item_serial = str(request_data['serial'+str(i+1)])
+            item_ob = Item_Info.objects.get(serial_num=item_serial).item
+            data = Pur_History(customer=customer_id, item=item_ob)
+            data.save()
+
+            j = 0
+            while j < len(coupons_list):
+                name = 'coupon' + str(i+1)
+                if coupons_list[name]['item']==item_ob and coupons_list[name]['use']==False:
+                    coupons_list[name]['use']=True
+                    Coupon_Item_Info.objects.filter(serial_num=coupons_list[name]['serial_num']).update(coupon_use=True)
+                    final_payment_amount = final_payment_amount + (item_ob.price * ((100 - coupons_list[name]['discount_rate'])/100))
+                    break
+
+            if j==len(coupons_list):
+                final_payment_amount = final_payment_amount + item_ob.price
+
+        not_use_coupons = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
+
+        for check in not_use_coupons:
+            check.coupon_use = False
+
+        push_service.notify_single_device(registration_id=customer_id.reg_id, message_title='payment',message_body=final_payment_amount)
+
+        send_json = json.dumps(final_payment_amount, ensure_ascii=False)
+
+        return HttpResponse(send_json)
+
+
 
 
 
