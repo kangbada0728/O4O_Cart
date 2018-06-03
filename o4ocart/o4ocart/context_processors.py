@@ -27,7 +27,7 @@ def gnb_menus(request):
         {
             'name': '시각화',
             'sub_menus': [
-                {'name': '고객 이동경로', 'url': '/draw/'},
+                {'name': '고객 이동경로', 'url': '/admin/draw/img_selector/'},
             ]
         },
         {

@@ -258,7 +258,9 @@ def cart_paring(request):
         cart_serial = request_data['serial']
         cus_id = request_data['id']
 
-        Cart_Info.objects.filter(serial_num=cart_serial).update(owner=cus_id)
+        owner_ob = Customer_Info.objects.get(id=cus_id)
+
+        Cart_Info.objects.filter(serial_num=cart_serial).update(owner=owner_ob)
 
 
 @csrf_exempt

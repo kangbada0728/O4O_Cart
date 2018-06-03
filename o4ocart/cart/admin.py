@@ -19,14 +19,14 @@ class Sex_Info_Admin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-'''
+
 class Temp(admin.ModelAdmin):
     list_per_page = 10
     list_display = ('id', 'age', 'sex', 'note',)
     list_filter = ('age', 'sex',)
     search_fields = ('id',)
     ordering = ('-age',)
-
+'''
 class Customer_info_Admin(admin.ModelAdmin):
     list_per_page = 10
     list_display = ('id', 'age', 'sex', 'note',)

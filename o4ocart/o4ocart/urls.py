@@ -20,10 +20,10 @@ from django.conf.urls import url
 
 
 urlpatterns = [
-    url(r'^',include('draw.urls')),
     url(r'^',include('raspberry.urls')),
     url(r'^',include('android.urls')),
     path('cart/', include('cart.urls')),
+    path('draw/', include('draw.urls')),
     path('admin/', admin.site.urls),
 
 ]
