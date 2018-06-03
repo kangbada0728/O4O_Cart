@@ -12,6 +12,10 @@ urlpatterns = [
     path('send_mvhistory/', views.send_mvhistory, name='send_mvhistory'),
     path('send_coupon/', views.send_coupon, name='send_coupon'),
     path('cart_paring/', views.cart_paring, name='cart_paring'),
+    path('change_coupon_state/', views.change_coupon_state, name='change_coupon_state'),
+    path('do_payment/', views.do_payment, name='do_payment'),
+
+
     path('cart_add/', views.cart_add, name='cart_add'),
     #path('ad_add/', views.ad_add, name='ad_add'),
     path('coupon_add/', views.coupon_add, name='coupon_add'),
