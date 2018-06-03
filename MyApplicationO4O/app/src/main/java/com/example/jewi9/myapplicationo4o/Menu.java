@@ -141,15 +141,12 @@ public class Menu extends AppCompatActivity
                 try {
                     jsonObject.accumulate("token",FirebaseInstanceId.getInstance().getToken());
                     Log.d("token", "token@@@@@@ in Menu.java: " + FirebaseInstanceId.getInstance().getToken());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                try {
                     jsonObject.accumulate("id",MainActivity.id_string);
                     Log.d("id", "id@@@@@@ in Menu.java: " + MainActivity.id_string);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
                 json = jsonObject.toString();
                 try {
                     result = goHttpPost(url, json);
@@ -162,9 +159,6 @@ public class Menu extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d("couponarray@@@@@@", "couponarray@@@@@@: " + coupon_jsonobject);
-
-
                 return null;
             }
 

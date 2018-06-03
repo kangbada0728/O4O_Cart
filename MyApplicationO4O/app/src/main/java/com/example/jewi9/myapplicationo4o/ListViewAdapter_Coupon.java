@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,13 +39,28 @@ public class ListViewAdapter_Coupon extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         final int pos = position;
         final Context context = parent.getContext();
+        //ViewHolder holder = null;
+
 
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.coupon_custom_list_view, parent, false);
+
+            /*holder = new ViewHolder();
+            holder.serial = (TextView) convertView.findViewById(R.id.textView4);
+            holder.cbox = (CheckBox) convertView.findViewById(R.id.checkBox1);
+            convertView.setTag(holder);
+            holder.serial.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    CheckBox cb = (CheckBox) v;
+
+                }
+            });*/
         }
 
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
@@ -63,7 +79,10 @@ public class ListViewAdapter_Coupon extends BaseAdapter {
         DueDateTextView.setText(listViewItem.getdueDate());
 
         return convertView;
-
+    }
+    private class ViewHolder{
+        TextView serial;
+        CheckBox cbox;
     }
     // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
     public void addItem(Drawable icon, String couponName, String discountRate, String dueDate) {

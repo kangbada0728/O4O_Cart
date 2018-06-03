@@ -7,6 +7,30 @@ public class ListViewItem_Coupon {
     private String discount ;
     private String couponName;
     private String dueDate;
+    private String serial;
+    //private String cbox = null;
+    //boolean selected = false;
+
+    /*public ListViewItem_Coupon(String serial,String cbox,boolean selected){
+        super();
+        this.serial = serial;
+        this.cbox = cbox;
+        this.selected = selected;
+    }
+    public void setSelected(boolean selected){
+        this.selected=selected;
+    }
+    public  boolean isSelected(){
+        return selected;
+    }
+    public void setCbox(String cbox){
+        this.cbox =cbox;
+    }
+    public String getCbox(){
+        return cbox;
+    }
+
+*/
 
     public void setIcon(Drawable icon) {
         this.icon = icon ;
@@ -19,6 +43,9 @@ public class ListViewItem_Coupon {
     }
     public void setdueDate(String dueDate){
         this.dueDate = dueDate;
+    }
+    public void setSerial(String serial){
+        this.serial = serial;
     }
 
     public Drawable getIcon() {
@@ -33,4 +60,8 @@ public class ListViewItem_Coupon {
     public String getdueDate(){
         return this.dueDate;
     }
+    public String getSerial(){
+        return this.serial;
+    }
+
 }

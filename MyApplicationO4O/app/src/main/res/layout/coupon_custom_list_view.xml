@@ -38,6 +38,7 @@
         android:gravity="center"
         android:layout_gravity="bottom"
         android:layout_weight="5" />
+
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
