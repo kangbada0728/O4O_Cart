@@ -10,6 +10,9 @@ from cart.models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info
 import collections
 from cart.views import receive_cartqrcode
 
+mul = 0.66
+#사진배율
+
 def detectQR(image_name):
     host = '127.0.0.1'
     test_logger = logging.getLogger()
@@ -39,16 +42,16 @@ def detectQR(image_name):
                 'camID':int(csv[0]),
                 'x':int(csv[i+2]),
                 'y':int(csv[i+3]),
-                'time': int(timestamp),
                 }
+                #'time': int(timestamp),
             #data_json = json.dumps(data, indent = 2)
 
-            time_num = int(timestamp)
+            time_num = int(float(timestamp))
             #serial = 'cart128644'
             serial = str(int(csv[i+1]))
             camera_num = int(csv[0])
-            coor_x = int(100)
-            coor_y = int(100)
+            coor_x = mul*int(csv[i+2])
+            coor_y = mul*int(csv[i+3])
 
             cart_customer = Cart_Info.objects.get(serial_num=serial).owner
             camera = Camera_Info.objects.get(num=camera_num)
@@ -57,5 +60,5 @@ def detectQR(image_name):
             #receive_cartqrcode(serial,camera_num,coor_x,coor_y)
 
             print("DB SAVED")
-            test_logger.info('python-logstash: test extra fields', extra=logdata)
+            #test_logger.info('python-logstash: test extra fields', extra=logdata)
             print("LOG SAVED")

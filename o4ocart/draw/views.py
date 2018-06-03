@@ -24,7 +24,7 @@ def draw(request):
         form_customer = form.data['customer']
         form_start_date = form.data['start_date']
         form_end_date = form.data['end_date']
-        
+
         result_customer = Customer_Info.objects.get(id=form_customer)
         change_start_date = datetime.datetime.strptime(form_start_date, '%Y-%m-%d %H:%M:%S')
         change_end_date = datetime.datetime.strptime(form_end_date, '%Y-%m-%d %H:%M:%S')
@@ -70,3 +70,6 @@ def image(request):
             response = HttpResponse(content_type="image/jpeg")
             red.save(response, "JPEG")
             return response
+@csrf_exempt
+def charts(request):
+    return render(request, 'admin/charts.html', {})

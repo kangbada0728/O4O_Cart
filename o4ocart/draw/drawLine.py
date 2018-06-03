@@ -8,24 +8,6 @@ import os
 import json
 from django.http import HttpResponse
 
-'''
-#im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
-script_path = os.getcwd()
-#o4ocart 폴더(앱있는곳)
-print(script_path)
-path= os.path.join(script_path,"draw","sources" ,"martmap_source.png" ).replace('\\', '/')
-font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
-
-
-im = Image.open(path).convert("RGBA")
-font_order = ImageFont.truetype(font_path,10)
-font_time = ImageFont.truetype(font_path,10)
-
-drawT = ImageDraw.Draw(im)
-draw = aggdraw.Draw(im)
-'''
-
-#im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
 script_path = os.getcwd()
 #o4ocart 폴더(앱있는곳)
 print(script_path)
@@ -56,19 +38,6 @@ def getXY(data_json):
     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print(list_data)
     return(list_data)
-    #x는 list이다
-    #print(type(x))
-
-    #print(len(x))
-    #개수만큼 길이 나온다
-
-    #print(type(x[0]))
-    #이건 dict
-
-    #print(x[0]["x"]) 이렇게 넘기면 받은 json에 대해서 x값을 뽑을 수 있다
-
-    #print(s_sorted)
-    #showImage(x)
 
 def drawTime(_list_xy):
 
@@ -89,14 +58,7 @@ def drawTime(_list_xy):
 
 
 def showImage(_list_xy):
-    '''
-    font_order = ImageFont.truetype('C:\\NanumBarunGothicLight.ttf',20)
-    font_time = ImageFont.truetype('C:\\NanumBarunGothicLight.ttf',10)
-    #im = Image.new('RGBA', (400, 400), (0, 255, 0, 0))
-    im = Image.open('C:\map.png').convert("RGBA")
-    drawT = ImageDraw.Draw(im)
-    draw = aggdraw.Draw(im)
-    '''
+
     print(_list_xy)
     pen = aggdraw.Pen((190,150,130))
     brush = aggdraw.Brush((190,150,110))
