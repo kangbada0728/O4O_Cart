@@ -8,7 +8,6 @@ camNum = '1'
 
 while(True):
 
-
 	image_name = '1_1527596108.23.jpg'
 	files={'content':open('C:\\Users\\HG\\1_1527596108.23.jpg','rb')}
 	params = {'image_name': image_name}
@@ -16,5 +15,5 @@ while(True):
 	#os.remove('/home/pi/%s' %image_name)
 
 	req_result = req.content
-	print("sended")
+
 	sleep(3)

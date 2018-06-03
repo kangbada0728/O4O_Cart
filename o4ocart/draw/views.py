@@ -13,13 +13,16 @@ from draw.drawLine import *
 
 @csrf_exempt
 def index(request):
-    visualize(data_json)
-    print("manager web index")
-    return render(request, 'draw/index.html', {})
+    print("index")
+    draw(request)
+    #여기서 그림그리기.
+    print("requested")
+    return render(request, 'draw/mv_history.html')
 
 @csrf_exempt
 def draw(request):
-
+    #draw/image, 여기서는 마트 내 고객들의 현재 위치를 읽어보자.
+    #여러개 그리기.
     print("draw")
     #print(request)
     #customer_id = request.GET['customerID']

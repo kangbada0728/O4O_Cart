@@ -144,6 +144,6 @@ def visualize(data_json):
     print("visualize")
     #list_xy = getXY(data_json)
     list_xy = data_json
-    showImage(list_xy)
-    #drawPoints(list_xy)
+    #showImage(list_xy)
+    drawPoints(list_xy)
     print(os.getcwd())
