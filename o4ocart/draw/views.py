@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import render, redirect
 from cart.models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info, Items, Coupon_Item_Info, Matrix, Mv_History
 import collections
 # Create your views here.
@@ -9,65 +10,57 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from draw.drawLine import *
 #from serializers import TestSerializer
+from .forms import Img_Selector_Form
+from django.db.models import Q
+import time
+from PIL import Image, ImageDraw, ImageFont
 
-
-@csrf_exempt
-def index(request):
-    print("index")
-    draw(request)
-    #여기서 그림그리기.
-    print("requested")
-    return render(request, 'draw/mv_history.html')
 
 @csrf_exempt
 def draw(request):
-    #draw/image, 여기서는 마트 내 고객들의 현재 위치를 읽어보자.
-    #여러개 그리기.
-    print("draw")
-    #print(request)
-    #customer_id = request.GET['customerID']
-    #-------------
-    customer_id = "customer1"
-    mv_historys = Mv_History.objects.filter(customer=customer_id).all()
+    if request.method == 'POST':
+        form = Img_Selector_Form(request.POST)
 
-    sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
+        form_customer = form.data['customer']
+        form_start_date = form.data['start_date']
+        form_end_date = form.data['end_date']
+        
+        result_customer = Customer_Info.objects.get(id=form_customer)
+        change_start_date = datetime.datetime.strptime(form_start_date, '%Y-%m-%d %H:%M:%S')
+        change_end_date = datetime.datetime.strptime(form_end_date, '%Y-%m-%d %H:%M:%S')
 
-    def tree(): return collections.defaultdict(tree)
+        result_start_date = time.mktime(change_start_date.timetuple())
+        result_end_date = time.mktime(change_end_date.timetuple())
 
-    sorted_mv_historys_form = tree()
+        mv_list = []
 
-    mv_list = []
-    i = 0
-    for check in sorted_mv_historys:
-        mv_dict = {}
-        name = 'history' + str(i+1)
-        sorted_mv_historys_form[name]['time'] = check.time
-        sorted_mv_historys_form[name]['camera_num'] = check.camera_num.num
-        sorted_mv_historys_form[name]['x'] = check.x
-        sorted_mv_historys_form[name]['y'] = check.y
-        i = i + 1
-        mv_dict['time'] = check.time
-        mv_dict['x'] = check.x
-        mv_dict['y'] = check.y
-        print(mv_dict)
-        mv_list.append(mv_dict)
+        try:
+            mv_historys = Mv_History.objects.filter(Q(customer=result_customer)
+                                                    & Q(time__gte=result_start_date)
+                                                    & Q(time__lte=result_end_date))
+        except mv_historys.DoesNotExist:
+            print("mv list except")
+            return redirect('/admin/draw/img_selector/')
 
-    send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
-    data_json = mv_list
-    print("#######################################################")
-    print(data_json)
-    #data_json = send_json
-    #----------------
-    visualize(data_json)
-    print("mv_history")
-    return render(request, 'draw/mv_history.html')
-    #return HttpResponse('success')
+        sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
 
-    #return render(request, 'managerweb/index.html', {})
+        for check in sorted_mv_historys:
+            mv_dict = {}
+            mv_dict['time'] = check.time
+            mv_dict['x'] = check.x
+            mv_dict['y'] = check.y
+            mv_list.append(mv_dict)
+
+        if len(mv_list)==0:
+            im = Image.open(path).convert("RGBA")
+            im.save('draw\\result\\out.png')
+            return redirect('/admin/draw/img_selector/')
+        visualize(mv_list)
+        return redirect('/admin/draw/img_selector/')
+
 
 @csrf_exempt
 def image(request):
-    print("image")
     if request.method == 'GET':
         try:
             with open('draw\\result\\out.png', "rb") as f:

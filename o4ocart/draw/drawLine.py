@@ -97,7 +97,7 @@ def showImage(_list_xy):
     drawT = ImageDraw.Draw(im)
     draw = aggdraw.Draw(im)
     '''
-
+    print(_list_xy)
     pen = aggdraw.Pen((190,150,130))
     brush = aggdraw.Brush((190,150,110))
     outline = aggdraw.Pen((190,170,130),5)
@@ -122,7 +122,7 @@ def showImage(_list_xy):
 
     draw.flush()
     drawTime(_list_xy)
-    #im.show()
+    im.show()
     im.save('draw\\result\\out.png')
 
 def drawPoints(list_xy):
@@ -141,9 +141,12 @@ def drawPoints(list_xy):
     im.save('draw\\result\\out.png')
 
 def visualize(data_json):
+    im = Image.open(path).convert("RGBA")
+    drawT = ImageDraw.Draw(im)
+    draw = aggdraw.Draw(im)
     print("visualize")
     #list_xy = getXY(data_json)
     list_xy = data_json
     #showImage(list_xy)
     drawPoints(list_xy)
-    print(os.getcwd())
+  #  print(os.getcwd())

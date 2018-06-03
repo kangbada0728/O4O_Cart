@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+    <h2>고객 이동경로 시각화</h2>
+    <form method="POST" name="Image_Selector" action="/draw/draw/">
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" name="submit" value="제출">
+
+        {% csrf_token %}
+    </form>
+
+
+    <img src="/draw/image/" alt = "경로이미지" height="480" width="800">
+
+{% endblock %}
