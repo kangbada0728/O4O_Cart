@@ -161,17 +161,17 @@ def receive_cartqrcode(request):  # qr코드 일련번호, 카메라번호, x, y
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        time_num = int(request_data['time'])
-        serial = str(request_data['serial'])
+        #time_num = int(request_data['time'])
+        cart_serial = str(request_data['serial'])
         camera_num = int(request_data['camera'])
         coor_x = int(request_data['x'])
         coor_y = int(request_data['y'])
 
-        cart_customer = Cart_Info.objects.get(serial_num=serial).owner
+        cart_customer = Cart_Info.objects.get(serial_num=cart_serial).owner
         camera = Camera_Info.objects.get(num=camera_num)
 
-        data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
-        data.save()
+        #data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
+        #data.save()
 
         area_in = Matrix.objects.get(Q(start_x__lte=coor_x) | Q(start_y__lte=coor_y) | Q(end_x__gte=coor_x) | Q(end_y__gte=coor_y))
 
