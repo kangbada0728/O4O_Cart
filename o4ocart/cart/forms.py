@@ -37,6 +37,7 @@ class ItemForm(ModelForm):
         model = Item_Info
         fields = ['item', 'inbound_date', 'expire_date', 'num']
 
+
 class MatrixForm(ModelForm):
     class Meta:
         model = Matrix

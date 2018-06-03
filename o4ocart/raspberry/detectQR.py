@@ -51,8 +51,8 @@ def detectQR(image_name):
             #serial = 'cart128644'
             serial = str(int(csv[i+1]))
             camera_num = int(csv[0])
-            coor_x = int(csv[i+2])
-            coor_y = int(csv[i+3])
+            coor_x = int(100)
+            coor_y = int(100)
 
             cart_customer = Cart_Info.objects.get(serial_num=serial).owner
             camera = Camera_Info.objects.get(num=camera_num)
