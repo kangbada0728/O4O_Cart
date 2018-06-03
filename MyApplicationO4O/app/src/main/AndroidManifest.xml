@@ -38,6 +38,8 @@
         <activity android:name=".Swipe_Compare" />
         <activity android:name=".CartPairing"/>
         <activity android:name=".CaptureActivityAnyOrientation"/>
+        <activity android:name="CheckWatchAd"/>
+        <activity android:name=".ShowAdPicture"/>
 
         <service     android:name=".MyFirebaseMessagingService">
             <intent-filter>

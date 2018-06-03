@@ -209,16 +209,16 @@ public class Menu extends AppCompatActivity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch (position) {
-                case 0:
+                case 0://페어링하기
                     onClickPairing(view);
                     break;
-                case 1:
+                case 1://가격비교
                     onClickCompare(view);
                     break;
-                case 2:
+                case 2://보유쿠폰확인
                     onClickCoupon(view);
                     break;
-                case 3:
+                case 3://구매내역
 
                     break;
 

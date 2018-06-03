@@ -12,35 +12,36 @@ import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONObject;
 
 
 public class MyFirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     private static final String TAG = "FirebaseMsgService";
-
+    public static JSONObject pushData=null;
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)   {
-        Intent intent = new Intent(MyFirebaseMessagingService.this,Push.class);
-        startActivity(intent);
-        Log.v("@@@@@@","onMessageReceived");
-        //sendPushNotification(remoteMessage.getData().get("message"));
+        //Intent intent = new Intent(MyFirebaseMessagingService.this,Push.class);
+        //startActivity(intent);
         if (remoteMessage.getData().size() > 0) {
-            Log.v("@@@@@@","remoteMessage.getData().size() > 0");
             sendNotification(remoteMessage.getData().get("message"));
         }
 
         if (remoteMessage.getNotification() != null) {
-            Log.v("@@@@@@","remoteMessage.getNotification() != null");
             sendNotification(remoteMessage.getNotification().getBody());
-        }
 
-        sendNotification(remoteMessage.getData().get("message"));
+            Log.d("Link@@@@@@","Link@@@@@@"+remoteMessage.getData());
+        }
+        pushData = new JSONObject(remoteMessage.getData());
+        Log.d("Link@@@@@@","Link@@@@@@"+pushData);
+
+        //sendNotification(remoteMessage.getData().get("message"));
     }
 
     private void sendNotification(String message) {
         System.out.println("@@@@@@received message in sendNotification : " + message);
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, CheckWatchAd.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -49,8 +50,8 @@ public class MyFirebaseMessagingService extends com.google.firebase.messaging.Fi
         String channelId = "channel Id";
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this,channelId)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Push Title ")
+                .setSmallIcon(R.drawable.o4o)
+                .setContentTitle("O4O CART 광고가 도착했습니다.")
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)

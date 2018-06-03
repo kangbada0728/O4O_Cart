@@ -33,7 +33,7 @@ import java.util.HashMap;
 
 public class Coupon extends AppCompatActivity {
    // private ArrayList<HashMap<String,String>> Data = new ArrayList<HashMap<String, String>>();
-   Menu menu = new Menu();
+    Menu menu = new Menu();
     private ListView listView;
     int num_of_coupon;
 
