@@ -41,6 +41,7 @@
         <activity android:name="CheckWatchAd"/>
         <activity android:name=".ShowAdPicture"/>
         <activity android:name=".ProductInfo"/>
+        <activity android:name=".PurchaseHistory"/>
 
         <service     android:name=".MyFirebaseMessagingService">
             <intent-filter>

@@ -44,6 +44,7 @@ public class Menu extends AppCompatActivity
 
     public static JSONObject coupon_jsonobject;
     public static JSONObject product_jsonobject;
+    public static JSONObject pur_history_jsonobj;
     String barcode=null;
 
     @Override
@@ -203,6 +204,65 @@ public class Menu extends AppCompatActivity
         integrator.initiateScan();
     }
 
+    public void onClickPurHistory(View view)
+    {
+        //서버에 요청을 보낸다.(보낼값: token, id)
+        class BtnAsyncTask extends AsyncTask {
+            String result="";
+            String url = "http://192.168.28.219:8000/cart/pur_history/";
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                Intent intent = new Intent( Menu.this, PurchaseHistory.class);
+                startActivity( intent );
+            }
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                String json="";
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.accumulate("id",MainActivity.id_string);
+                    //나중에 시간정보도 함께 넘겨야 됨.!!!!!!
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                json = jsonObject.toString();
+                try {
+                    result = goHttpPost(url, json);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.d("resultPur@@@@@@", "resultPur@@@@@@: " + result);
+                try {
+                    pur_history_jsonobj = new JSONObject(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
+                String msg = null; //http 연결 인증
+                DefaultHttpClient client = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost(host);
+
+                try {
+                    httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
+                }
+                catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
+                }
+                ResponseHandler responseHandler = new BasicResponseHandler();
+                msg = (String) client.execute(httppost, responseHandler);
+
+                return msg;
+            }
+        }
+        BtnAsyncTask async = new BtnAsyncTask();
+        async.execute();
+    }
 
     private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
 
@@ -219,7 +279,7 @@ public class Menu extends AppCompatActivity
                     onClickCoupon(view);
                     break;
                 case 3://구매내역
-
+                    onClickPurHistory(view);
                     break;
 
             }
