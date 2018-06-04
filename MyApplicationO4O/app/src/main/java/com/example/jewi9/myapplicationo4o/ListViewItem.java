@@ -6,6 +6,7 @@ public class ListViewItem {
     private Drawable iconDrawable ;
     private String titleStr ;
     private String descStr ;
+    private String expireDate ;
 
     public void setIcon(Drawable icon) {
         iconDrawable = icon ;
@@ -15,6 +16,9 @@ public class ListViewItem {
     }
     public void setDesc(String desc) {
         descStr = desc ;
+    }
+    public void setExpire(String expire){
+        expireDate = expire;
     }
 
     public Drawable getIcon() {
@@ -26,4 +30,5 @@ public class ListViewItem {
     public String getDesc() {
         return this.descStr ;
     }
+    public String getExpire(){return this.expireDate;}
 }

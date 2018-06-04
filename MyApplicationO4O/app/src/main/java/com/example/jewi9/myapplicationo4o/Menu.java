@@ -77,7 +77,7 @@ public class Menu extends AppCompatActivity
 
             class BtnAsyncTask extends AsyncTask {
                 String result="";
-                String url = "http://192.168.17.209:8000/cart/comparing_product/";//나중에 원격서버주소로 변경!!!!!!!!!
+                String url = "http://192.168.28.219:8000/cart/comparing_product/";//나중에 원격서버주소로 변경!!!!!!!!!
                 @Override
                 protected void onPostExecute(Object o) {
                     super.onPostExecute(o);
@@ -140,7 +140,7 @@ public class Menu extends AppCompatActivity
         //서버에 요청을 보낸다.(보낼값: token, id)
         class BtnAsyncTask extends AsyncTask {
             String result="";
-            String url = "http://192.168.17.209:8000/cart/coupon_check/";
+            String url = "http://192.168.28.219:8000/cart/coupon_check/";
 
             @Override
             protected void onPostExecute(Object o) {

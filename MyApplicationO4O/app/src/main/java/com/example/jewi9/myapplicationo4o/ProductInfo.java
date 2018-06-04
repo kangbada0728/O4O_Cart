@@ -8,11 +8,12 @@ import android.widget.ListView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Popular extends AppCompatActivity {
+public class ProductInfo extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.popularlist);
+        setContentView(R.layout.productinfo);
 
         Menu menu = new Menu();
         ListView listview;
@@ -25,19 +26,16 @@ public class Popular extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.listview1);
         listview.setAdapter(adapter);
 
-        for(int i = 0 ;i<menu.product_jsonobject.length()-1;i++){
-            try {
-                //product에 item1,2... 들을 각각 넣는다.
-                JSONObject product = (JSONObject)menu.product_jsonobject.get("popular"+Integer.toString(i+1));
-                String name = product.getString("name"); name = Integer.toString(i+1) + ". " + name;
+        try {
+            JSONObject product = (JSONObject)menu.product_jsonobject.get("item_info");
+            String name = product.getString("item_name");
+            String expireDate = product.getString("expire_date"); expireDate = "유통기한" + expireDate;
+            String price = product.getString("price"); price = price +"원";
 
-                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.o4o), name, "","");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            adapter.addItem(ContextCompat.getDrawable(this, R.drawable.o4o), name, price, expireDate);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
     }
 }
-
-

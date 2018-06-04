@@ -43,7 +43,7 @@ public class CheckWatchAd extends AppCompatActivity {
     public void onClickCheckAD(View view) {
         class BtnAsyncTask extends AsyncTask {
             String result = "";
-            String url = "http://192.168.17.209:8000/cart/cart_paring/";
+            String url = "http://192.168.28.219:8000/cart/send_coupon/";
 
             @Override
             protected Object doInBackground(Object[] objects) {

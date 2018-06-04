@@ -38,7 +38,7 @@ public class Compare extends AppCompatActivity{
                 String name = product.getString("name");
                 String price = product.getString("price"); price = price + "원";
 
-                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.ic_launcher_background), name, price);
+                adapter.addItem(ContextCompat.getDrawable(this, R.drawable.o4o), name, price,"");
 
             } catch (JSONException e) {
                 e.printStackTrace();

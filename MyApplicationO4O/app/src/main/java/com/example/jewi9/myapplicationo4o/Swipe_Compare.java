@@ -20,14 +20,20 @@ public class Swipe_Compare extends TabActivity {
         TabHost comparTab = getTabHost(); //탭호스트 객체 생성
         TabHost.TabSpec spec;
         Intent intent;
+
+        //상품 정보 탭!
+        intent = new Intent(this, ProductInfo.class);
+        spec = comparTab.newTabSpec("FirstTab").setIndicator("상품정보").setContent(intent);
+        comparTab.addTab(spec);
+
         //가격 비교 탭!
         intent = new Intent(this, Compare.class);
-        spec = comparTab.newTabSpec("FirstTab").setIndicator("가격비교").setContent(intent);
+        spec = comparTab.newTabSpec("SecondTab").setIndicator("가격비교").setContent(intent);
         comparTab.addTab(spec);
 
         //인기 상품 탭!
         intent = new Intent(this, Popular.class);
-        spec = comparTab.newTabSpec("SecondTab").setIndicator("인기상품").setContent(intent);
+        spec = comparTab.newTabSpec("ThirdTab").setIndicator("인기상품").setContent(intent);
         comparTab.addTab(spec);
     }
 
