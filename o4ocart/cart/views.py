@@ -12,6 +12,7 @@ from django.db.models import Q, QuerySet
 import operator
 from django.utils import timezone
 from django.utils.timezone import localdate
+import datetime
 
 from pyfcm import FCMNotification
 
@@ -90,6 +91,70 @@ def coupon_check(request):
 
 
 @csrf_exempt
+def pur_history(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        try:
+            form_customer = str(request_data['id'])
+        except KeyError:
+            HttpResponse(False)
+        try:
+            form_start_date = str(request_data['start_date'])
+            form_end_date = str(request_data['end_date'])
+        except KeyError:
+            form_start_date = timezone.localtime()
+            form_end_date = timezone.localtime()
+
+        result_customer = Customer_Info.objects.get(id=form_customer)
+        result_start_date = form_start_date
+        result_end_date = form_end_date
+
+        def tree():
+            return collections.defaultdict(tree)
+
+        sorted_pur_history = tree()
+
+        if result_start_date == None or result_end_date == None:
+            try:
+                entire_pur_history = Pur_History.objects.filter(customer=result_customer)
+            except Pur_History.DoesNotExist:
+                send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
+                return HttpResponse(send_json)
+
+            i = 0
+            for check in entire_pur_history:
+                name = 'history' + str(i+1)
+                sorted_pur_history[name]['time'] = str(check.time.date())
+                sorted_pur_history[name]['item'] = check.item.item.name
+                sorted_pur_history[name]['price'] = check.item.item.price
+                i = i + 1
+        else:
+            try:
+                zonetime = timezone.localtime()
+
+                selected_by_date_pur_history = Pur_History.objects.filter(Q(customer=result_customer)
+                                                                          & Q(time__gte=datetime.datetime.fromtimestamp(result_start_date/1000))
+                                                                          & Q(time__lte=datetime.datetime.fromtimestamp(result_end_date/1000)))
+            except Pur_History.DoesNotExist:
+                send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
+                return HttpResponse(send_json)
+
+            i = 0
+            for check in selected_by_date_pur_history:
+                name = 'history' + str(i + 1)
+                sorted_pur_history[name]['time'] = str(check.time.date())
+                sorted_pur_history[name]['item'] = check.item.item.name
+                sorted_pur_history[name]['price'] = check.item.item.price
+                i = i + 1
+
+        send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
+        return HttpResponse(send_json)
+
+
+
+@csrf_exempt
 def comparing_product(request):
     if request.method == 'POST':
         request_json = (request.body).decode('utf-8')
@@ -115,7 +180,7 @@ def comparing_product(request):
         for check in ad_data:
             if check.item.sort == item_sort:
                 name = 'ad' + str(i + 1)
-                sorted_items_form[name]['name'] = check.item
+                sorted_items_form[name]['name'] = check.item.name
                 sorted_items_form[name]['inventory'] = check.item.inventory
                 sorted_items_form[name]['price'] = check.item.price
             i = i + 1
@@ -155,6 +220,7 @@ def comparing_product(request):
         send_json = json.dumps(sorted_items_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
+
 
 
 @csrf_exempt
@@ -283,6 +349,14 @@ def change_coupon_state(request):
         return HttpResponse(True)
 
 
+
+
+
+
+
+
+
+
 @csrf_exempt
 def do_payment(request):
     if request.method == 'POST':
@@ -343,6 +417,12 @@ def do_payment(request):
 
 
 
+
+
+
+
+
+
 def cart_add(request):
     if request.method == 'POST':
         form = CartForm(request.POST)
@@ -363,26 +443,6 @@ def cart_add(request):
             data.save()
             i = i + 1
     return redirect('/admin/cart/cart_info/')
-
-
-'''
-def ad_add(request):
-    if request.method == 'POST':
-        form = AdForm(request.POST)
-
-        form1 = form.data['item']
-        form2 = form.data['camera_num']
-        form3 = form.data['link_info']
-
-        result_item = Items.objects.get(name=form1)
-        result_camera = Camera_Info.objects.get(num=form2)
-
-        numcount = Ad_Info.objects.count()+1
-
-        data_ad = Ad_Info(num= numcount,item=result_item, camera_num=result_camera, link_info=form3)
-        data_ad.save()
-    return redirect('/admin/cart/ad_info/')
-'''
 
 
 def coupon_add(request):
