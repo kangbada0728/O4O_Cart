@@ -13,11 +13,16 @@ import operator
 from django.utils import timezone
 from django.utils.timezone import localdate
 import datetime
-
+from django.core.exceptions import ObjectDoesNotExist
 from pyfcm import FCMNotification
 
 API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
 push_service = FCMNotification(api_key=API_KEY)
+
+
+def tree():
+    return collections.defaultdict(tree)
+
 
 @csrf_exempt
 def user_signup(request):
@@ -30,15 +35,14 @@ def user_signup(request):
         result_age = int(request_data['age'])
         result_sex = Sex_Info.objects.get(sex=request_data['sex'])
 
-        id_check = Customer_Info.objects.filter(id=result_id).exists()
-
-        if id_check == False:
+        try:
+            Customer_Info.objects.filter(id=result_id)
+        except Customer_Info.DoesNotExist:
             data = Customer_Info(id=result_id, pwd=result_pwd, age=result_age, sex=result_sex)
             data.save()
-            return HttpResponse('success')
-        else:
-            return HttpResponse('fail')
+            return HttpResponse('Sign up Success\n')
 
+        return HttpResponse('You can\'t use this ID\n')
 
 
 @csrf_exempt
@@ -51,13 +55,17 @@ def user_signin(request):
         result_pwd = request_data['pwd']
         result_reg_id = request_data['reg_id']
 
-        real_pwd = Customer_Info.objects.get(id=result_id).pwd
+        try:
+            real_pwd = Customer_Info.objects.get(id=result_id).pwd
+        except Customer_Info.DoesNotExist:
+            print('Wrong ID\n')
+            return HttpResponse('Wrong ID\n')
 
         if real_pwd == result_pwd:
             Customer_Info.objects.filter(id=result_id).update(reg_id=result_reg_id)
-            return HttpResponse('success')
+            return HttpResponse('Login Success\n')
         else:
-            return HttpResponse('fail')
+            return HttpResponse('Wrong Password\n')
 
 
 @csrf_exempt
@@ -66,15 +74,30 @@ def coupon_check(request):
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        id = request_data['id']
+        result_id = request_data['id']
 
-        coupons = Coupon_Item_Info.objects.filter(Q(customer=id) & Q(coupon_use=False))
-
-        def tree():
-            return collections.defaultdict(tree)
+        try:
+            coupons = Coupon_Item_Info.objects.filter(Q(customer=result_id) & Q(coupon_use=False) & Q(coupon_item__end_date__gte=timezone.now()))
+        except Coupon_Item_Info.DoesNotExist:
+            print('There is no valid coupon\n')
+            return HttpResponse('There is no valid coupon\n')
 
         coupon_form = tree()
 
+        i = 0
+        for check in coupons:
+            name = 'coupon' + str(i + 1)
+            coupon_form[name]['serial_num'] = check.serial_num
+            coupon_form[name]['name'] = check.coupon_item.item.name
+            coupon_form[name]['discount'] = check.coupon_item.discount_rate
+            coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date())#.isoformat()
+            i = i + 1
+
+        send_json = json.dumps(coupon_form, ensure_ascii=False)
+        return HttpResponse(send_json)
+
+
+        '''
         i = 0
         for check in coupons:
             if check.coupon_item.end_date > timezone.now():
@@ -88,7 +111,7 @@ def coupon_check(request):
         send_json = json.dumps(coupon_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
-
+        '''
 
 @csrf_exempt
 def pur_history(request):
@@ -96,62 +119,41 @@ def pur_history(request):
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        try:
-            form_customer = str(request_data['id'])
-        except KeyError:
-            HttpResponse(False)
+        form_customer = str(request_data['id'])
         try:
             form_start_date = str(request_data['start_date'])
             form_end_date = str(request_data['end_date'])
         except KeyError:
-            form_start_date = timezone.localtime()
-            form_end_date = timezone.localtime()
+            print('start date & end date error\n')
+            return HttpResponse('You must enter start date & end date\n')
 
         result_customer = Customer_Info.objects.get(id=form_customer)
-        result_start_date = form_start_date
-        result_end_date = form_end_date
+        middle_start_date = datetime.datetime.fromtimestamp(form_start_date/1000)
+        middle_end_date = datetime.datetime.fromtimestamp(form_end_date/1000)
 
-        def tree():
-            return collections.defaultdict(tree)
+        result_start_date = middle_start_date.replace(tzinfo=timezone('Asia/Seoul'))
+        result_end_date = middle_end_date.replace(tzinfo=timezone('Asia/Seoul'))
+
+        try:
+            selected_by_date_pur_history = Pur_History.objects.filter(Q(customer=result_customer) & Q(time__gte=result_start_date) & Q(time__lte=result_end_date))
+        except Pur_History.DoesNotExist:
+            print('There is no purchase history in this date area\n')
+            return HttpResponse('There is no purchase history in this date area\n')
+
+        sorted_history = sorted(selected_by_date_pur_history, key=lambda x: x.time, reverse=False)
 
         sorted_pur_history = tree()
 
-        if result_start_date == None or result_end_date == None:
-            try:
-                entire_pur_history = Pur_History.objects.filter(customer=result_customer)
-            except Pur_History.DoesNotExist:
-                send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
-                return HttpResponse(send_json)
-
-            i = 0
-            for check in entire_pur_history:
-                name = 'history' + str(i+1)
-                sorted_pur_history[name]['time'] = str(check.time.date())
-                sorted_pur_history[name]['item'] = check.item.item.name
-                sorted_pur_history[name]['price'] = check.item.item.price
-                i = i + 1
-        else:
-            try:
-                zonetime = timezone.localtime()
-
-                selected_by_date_pur_history = Pur_History.objects.filter(Q(customer=result_customer)
-                                                                          & Q(time__gte=datetime.datetime.fromtimestamp(result_start_date/1000))
-                                                                          & Q(time__lte=datetime.datetime.fromtimestamp(result_end_date/1000)))
-            except Pur_History.DoesNotExist:
-                send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
-                return HttpResponse(send_json)
-
-            i = 0
-            for check in selected_by_date_pur_history:
-                name = 'history' + str(i + 1)
-                sorted_pur_history[name]['time'] = str(check.time.date())
-                sorted_pur_history[name]['item'] = check.item.item.name
-                sorted_pur_history[name]['price'] = check.item.item.price
-                i = i + 1
+        i = 0
+        for check in sorted_history:
+            name = 'history' + str(i + 1)
+            sorted_pur_history[name]['time'] = str(check.time)
+            sorted_pur_history[name]['item'] = check.item.item.name
+            sorted_pur_history[name]['price'] = check.item.item.price
+            i = i + 1
 
         send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
         return HttpResponse(send_json)
-
 
 
 @csrf_exempt
@@ -164,18 +166,25 @@ def comparing_product(request):
 
         item_sort = Item_Info.objects.get(serial_num=serial).item.sort
 
-        def tree():
-            return collections.defaultdict(tree)
-
         sorted_items_form = tree()
 #--
-        item = Item_Info.objects.get(serial_num=serial)
+        try:
+            item = Item_Info.objects.get(serial_num=serial)
+        except Item_Info.DoesNotExist:
+            print('Wrong Serial Number\n')
+            return HttpResponse('Wrong Serial Number\n')
+
         sorted_items_form['item_info']['item_name'] = item.item.name
-        sorted_items_form['item_info']['inbound_date'] = str(item.inbound_date)
-        sorted_items_form['item_info']['expire_date'] = str(item.expire_date)
+        sorted_items_form['item_info']['inbound_date'] = str(item.inbound_date.date())
+        sorted_items_form['item_info']['expire_date'] = str(item.expire_date.date())
         sorted_items_form['item_info']['price'] = item.item.price
 #--
-        ad_data = Ad_Info.objects.all()
+        try:
+            ad_data = Ad_Info.objects.all()
+        except Ad_Info.DoesNotExist:
+            print('There is no advertise information\n')
+            ad_data = None
+
         i = 0
         for check in ad_data:
             if check.item.sort == item_sort:
@@ -183,9 +192,13 @@ def comparing_product(request):
                 sorted_items_form[name]['name'] = check.item.name
                 sorted_items_form[name]['inventory'] = check.item.inventory
                 sorted_items_form[name]['price'] = check.item.price
-            i = i + 1
+                i = i + 1
 #--
-        same_sort_items = Items.objects.filter(sort=item_sort)
+        try:
+            same_sort_items = Items.objects.filter(sort=item_sort)
+        except Items.DoesNotExist:
+            print('Same sort Items do not exist\n')
+            same_sort_items = None
 
         same_sort_items_list = {}
 
@@ -198,15 +211,13 @@ def comparing_product(request):
 
         sorted_pur_items = sorted(same_sort_items_list, key=lambda x: x[1], reverse=False)
 
-
-        i=0
+        i = 0
         for check in sorted_pur_items:
             name = 'popular' + str(i+1)
             sorted_items_form[name]['name'] = check[0:]
-            i=i+1
-
+            i = i+1
 #--
-        items_list = Items.objects.filter(sort=item_sort).all()
+        items_list = Items.objects.filter(sort=item_sort)
         sorted_items_list = sorted(items_list, key=lambda x: x.price, reverse=False)
 
         i = 0
@@ -231,33 +242,43 @@ def receive_cartqrcode(serial, camera_number, x, y):  # qr코드 일련번호, �
     coor_x = x
     coor_y = y
 
-    cart_customer = Cart_Info.objects.get(serial_num=cart_serial).owner
-    camera = Camera_Info.objects.get(num=camera_num)
-#    print(coor_x)
-#    print(coor_y)
-
     try:
-        area_in = Matrix.objects.get(Q(start_x__lte=coor_x) & Q(start_y__lte=coor_y) & Q(end_x__gte=coor_x) & Q(end_y__gte=coor_y))
-    except Matrix.DoesNotExist:
+        cart_customer = Cart_Info.objects.get(serial_num=cart_serial).owner
+    except Cart_Info.DoesNotExist:
+        print('Cart info does not exist\n')
+        return False
+    except Cart_Info.MultipleObjectsReturned:
+        print('There is more than one Cart to this customer\n')
         return False
 
-    ad_data = Ad_Info.objects.get(location=area_in)
-#    print('test1')
+    camera = Camera_Info.objects.get(num=camera_num)
 
-    ad_check_num = Ad_checker.objects.filter(Q(ad=ad_data) & Q(customer=cart_customer) & Q(show_date=localdate())).count()
-    if ad_check_num == 0:
-#        print('test2')
-        ad_links = {}
-        ad_links.update({'link': ad_data.link_info})
-        ad_links.update({'item': ad_data.item.name})
+    try:
+        area_in = Matrix.objects.filter(Q(start_x__lte=coor_x) & Q(start_y__lte=coor_y) & Q(end_x__gte=coor_x) & Q(end_y__gte=coor_y))
+    except Matrix.DoesNotExist:
+        print('Matrix object does not exist\n')
+        return False
 
-        #send_json = json.dumps(ad_links, ensure_ascii=False)
-        push_service.notify_single_device(registration_id=cart_customer.reg_id, message_title='ad',
-                                          message_body='광고', data_message=ad_links)
-        data = Ad_checker(ad=ad_data, customer=cart_customer, show_date=timezone.now())
-        data.save()
+    for matrixs in area_in:
+        try:
+            ad_data = Ad_Info.objects.filter(location=matrixs)
+        except Ad_Info.DoesNotExist:
+            print('Ad info object does not exist\n')
+            return False
 
+        for ads in ad_data:
+            try:
+                Ad_checker.objects.filter(Q(ad=ads) & Q(customer=cart_customer) & Q(show_date=timezone.now().date()))
+            except Ad_checker.DoesNotExist:
+                ad_links = {}
+                ad_links.update({'link': ads.link_info})
+                ad_links.update({'item': ads.item.name})
 
+                # send_json = json.dumps(ad_links, ensure_ascii=False)
+                push_service.notify_single_device(registration_id=cart_customer.reg_id, message_title='ad',
+                                                  message_body='광고', data_message=ad_links)
+                data = Ad_checker(ad=ads, customer=cart_customer, show_date=timezone.now())
+                data.save()
 
 
 @csrf_exempt
@@ -270,21 +291,29 @@ def send_coupon(request):
         result_id = str(request_data['id'])
 
         item_name = Items.objects.get(name=result_item)
-        coupon_sort = Coupons_Item.objects.get(item=item_name)
 
         try:
-            coupon_test = Coupon_Item_Info.objects.filter(Q(coupon_item=coupon_sort) & Q(coupon_use=False))
-        except coupon_test.count()==0:
-            return HttpResponse('No Coupon')
+            coupons = Coupons_Item.objects.filter(item=item_name)
+        except Coupons_Item.DoesNotExist:
+            print('there is no coupon which have this item sort\n')
 
-        coupon_send = coupon_test.first()
+        for check in coupons:
+            try:
+                coupon_test = Coupon_Item_Info.objects.filter(Q(coupon_item=check) & Q(coupon_use=False))
+            except Coupon_Item_Info.DoesNotExist:
+                continue
 
-        coupon_serial = coupon_send.serial_num
-        cus = Customer_Info.objects.get(id=result_id)
-        Coupon_Item_Info.objects.filter(serial_num=coupon_serial).update(customer=cus)
-        return HttpResponse('Receive Coupon')
+            coupon_send = coupon_test.first()
 
+            try:
+                cus = Customer_Info.objects.get(id=result_id)
+            except Customer_Info.DoesNotExist:
+                print('invalid customer ID\n')
+                HttpResponse('invalid customer ID\n')
+            Coupon_Item_Info.objects.filter(serial_num=coupon_send.serial_num).update(customer=cus)
+            return HttpResponse('You receive Coupon\n')
 
+        return HttpResponse('There is no Coupon\n')
 
 
 @csrf_exempt
@@ -294,12 +323,14 @@ def send_mvhistory(request):
         request_data = json.loads(request_json)
 
         customer_id = request_data['id']
-        mv_historys = Mv_History.objects.filter(customer=customer_id).all()
+
+        try:
+            mv_historys = Mv_History.objects.filter(customer=customer_id)
+        except Mv_History.DoesNotExist:
+            print('There is no Move history : ' + customer_id+'\n')
+            return HttpResponse('There is no move history\n')
 
         sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
-
-        def tree():
-            return collections.defaultdict(tree)
 
         sorted_mv_historys_form = tree()
 
@@ -326,11 +357,19 @@ def cart_paring(request):
         cart_serial = request_data['serial']
         cus_id = request_data['id']
 
-        owner_ob = Customer_Info.objects.get(id=cus_id)
+        try:
+            owner_ob = Customer_Info.objects.get(id=cus_id)
+        except Customer_Info.DoesNotExist:
+            print('Customer ID invalid\n')
+            return HttpResponse('Customer ID invalid\n')
 
-        Cart_Info.objects.filter(serial_num=cart_serial).update(owner=owner_ob)
+        try:
+            Cart_Info.objects.filter(serial_num=cart_serial).update(owner=owner_ob)
+        except Cart_Info.DoesNotExist:
+            print('Cart QR code invalid\n')
+            return HttpResponse('Cart QR code invalid\n')
 
-        return HttpResponse(True)
+        return HttpResponse('Cart Paring Success\n')
 
 @csrf_exempt
 def change_coupon_state(request):
@@ -343,18 +382,14 @@ def change_coupon_state(request):
         i = 0
         while i < count:
             serial = str(request_data['serial'+str(i+1)])
-            Coupon_Item_Info.objects.filter(serial_num=serial).update(coupon_use=None)
+            try:
+                Coupon_Item_Info.objects.filter(serial_num=serial).update(coupon_use=None)
+            except Coupon_Item_Info.DoesNotExist:
+                print('There is no Coupon item info '+serial+'\n')
+                HttpResponse('Your Coupon is invalid\n')
             i = i + 1
 
-        return HttpResponse(True)
-
-
-
-
-
-
-
-
+        return HttpResponse('Your Coupon is now ready to use\n')
 
 
 @csrf_exempt
@@ -363,55 +398,60 @@ def do_payment(request):
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        id_temp = request_data['id']
-        customer_id = Customer_Info.objects.get(id=id_temp)
+        try:
+            customer_id = Customer_Info.objects.get(id=request_data['id'])
+        except Customer_Info.DoesNotExist:
+            print('invalid Customer ID\n')
+            return HttpResponse('invalid Customer ID\n')
+
         things_to_buy_count = len(request_data) - 1
         final_payment_amount = 0
+        nocoupon_payment_amount = 0
 
-        coupons_temp = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
-
-        def tree():
-            return collections.defaultdict(tree)
-
-        coupons_list = tree()
-        i = 0
-        for check in coupons_temp:
-            name = 'coupon' + str(i+1)
-            coupons_list[name]['serial_num'] = check.serial_num
-            coupons_list[name]['item'] = check.coupon_item.item
-            coupons_list[name]['discount_rate'] = check.coupon_item.discount_rate
-            coupons_list[name]['use'] = False
-            i = i + 1
+        try:
+            coupons_list = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
+        except Coupon_Item_Info.DoesNotExist:
+            print('This Customer does not want to use Coupon\n')
+            coupons_list = None
 
         i = 0
         while i < things_to_buy_count:
             item_serial = str(request_data['serial'+str(i+1)])
-            item_ob = Item_Info.objects.get(serial_num=item_serial).item
+            try:
+                item_ob = Item_Info.objects.get(serial_num=item_serial).item
+            except Item_Info.DoesNotExist:
+                print('Invalid Item Serial\n')
+                continue
             data = Pur_History(customer=customer_id, item=item_ob)
             data.save()
 
-            j = 0
-            while j < len(coupons_list):
-                name = 'coupon' + str(i+1)
-                if coupons_list[name]['item']==item_ob and coupons_list[name]['use']==False:
-                    coupons_list[name]['use']=True
-                    Coupon_Item_Info.objects.filter(serial_num=coupons_list[name]['serial_num']).update(coupon_use=True)
-                    final_payment_amount = final_payment_amount + (item_ob.price * ((100 - coupons_list[name]['discount_rate'])/100))
+            coupon_use_checker = False
+            for coupon in coupons_list:
+                if coupon.coupon_item.item == item_ob and coupon.coupon_use == None:
+                    Coupon_Item_Info.objects.filter(serial_num=coupon.serial_num).update(coupon_use=True)
+                    final_payment_amount = final_payment_amount + (item_ob.price * (100 - coupon.coupon_item.discount_rate/100))
+                    coupon_use_checker = True
                     break
-
-            if j==len(coupons_list):
+            if coupon_use_checker==True:
                 final_payment_amount = final_payment_amount + item_ob.price
+            nocoupon_payment_amount = nocoupon_payment_amount + item_ob.price
+            i = i + 1
 
-        not_use_coupons = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
+        try:
+            not_use_coupons = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
+        except Coupon_Item_Info.DoesNotExist:
+            print('All ready coupons are used\n')
 
         for check in not_use_coupons:
             check.coupon_use = False
 
-        Cart_Info.objects.filter(owner=customer_id).update(owner=None)
+        try:
+            Cart_Info.objects.filter(owner=customer_id).update(owner=None)
+        except Cart_Info.DoesNotExist:
+            print('This customer does not use cart\n')
 
-        push_service.notify_single_device(registration_id=customer_id.reg_id, message_title='payment',message_body=final_payment_amount)
-        send_json = json.dumps(final_payment_amount, ensure_ascii=False)
-        return HttpResponse(send_json)
+        push_service.notify_single_device(registration_id=customer_id.reg_id, message_title='결제금액',message_body=final_payment_amount)
+        return HttpResponse(final_payment_amount)
 
 
 
