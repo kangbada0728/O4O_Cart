@@ -55,7 +55,7 @@ public class CartPairing extends AppCompatActivity
                 class BtnAsyncTask extends AsyncTask
                 {
                     String result="";
-                    String url = "http://192.168.28.219:8000/cart/cart_paring/";
+                    String url = "http://192.168.0.2:8000/cart/cart_paring/";
                     @Override
                     protected Object doInBackground(Object[] objects)
                     {

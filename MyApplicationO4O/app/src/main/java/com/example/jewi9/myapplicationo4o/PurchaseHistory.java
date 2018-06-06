@@ -15,7 +15,7 @@ public class PurchaseHistory extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.purchasehistorylist);
 
-        Menu menu = new Menu();
+        Purchase_History_Select_Date purchase_history_select_date = new Purchase_History_Select_Date();
         ListView listview;
         ListViewAdapter adapter;
 
@@ -27,10 +27,10 @@ public class PurchaseHistory extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.listview1);
         listview.setAdapter(adapter);
 
-        for(int i = 0 ;i<menu.pur_history_jsonobj.length()-1;i++)
+        for(int i = 0 ;i<purchase_history_select_date.pur_history_jsonobj.length()-1;i++)
         {
             try {
-                JSONObject productHistory= (JSONObject)menu.pur_history_jsonobj.get("history"+Integer.toString(i+1));
+                JSONObject productHistory= (JSONObject)purchase_history_select_date.pur_history_jsonobj.get("history"+Integer.toString(i+1));
                 Log.d("@@@@@@purchase","@@@@@@purchase"+productHistory);
                 String productName = productHistory.getString("item");
                 String price = productHistory.getString("price"); price = price + "원";

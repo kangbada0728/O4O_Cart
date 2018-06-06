@@ -44,7 +44,6 @@ public class Menu extends AppCompatActivity
 
     public static JSONObject coupon_jsonobject;
     public static JSONObject product_jsonobject;
-    public static JSONObject pur_history_jsonobj;
     String barcode=null;
 
     @Override
@@ -78,7 +77,7 @@ public class Menu extends AppCompatActivity
 
             class BtnAsyncTask extends AsyncTask {
                 String result="";
-                String url = "http://192.168.28.219:8000/cart/comparing_product/";//나중에 원격서버주소로 변경!!!!!!!!!
+                String url = "http://192.168.0.2:8000/cart/comparing_product/";//나중에 원격서버주소로 변경!!!!!!!!!
                 @Override
                 protected void onPostExecute(Object o) {
                     super.onPostExecute(o);
@@ -141,7 +140,7 @@ public class Menu extends AppCompatActivity
         //서버에 요청을 보낸다.(보낼값: token, id)
         class BtnAsyncTask extends AsyncTask {
             String result="";
-            String url = "http://192.168.28.219:8000/cart/coupon_check/";
+            String url = "http://192.168.0.2:8000/cart/coupon_check/";
 
             @Override
             protected void onPostExecute(Object o) {
@@ -206,10 +205,11 @@ public class Menu extends AppCompatActivity
 
     public void onClickPurHistory(View view)
     {
-        //서버에 요청을 보낸다.(보낼값: token, id)
-        class BtnAsyncTask extends AsyncTask {
+        Intent intent = new Intent( Menu.this, Purchase_History_Select_Date.class);
+        startActivity( intent );
+        /*class BtnAsyncTask extends AsyncTask {
             String result="";
-            String url = "http://192.168.28.219:8000/cart/pur_history/";
+            String url = "http://192.168.0.26:8000/cart/pur_history/";
 
             @Override
             protected void onPostExecute(Object o) {
@@ -224,6 +224,7 @@ public class Menu extends AppCompatActivity
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.accumulate("id",MainActivity.id_string);
+
                     //나중에 시간정보도 함께 넘겨야 됨.!!!!!!
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -261,7 +262,7 @@ public class Menu extends AppCompatActivity
             }
         }
         BtnAsyncTask async = new BtnAsyncTask();
-        async.execute();
+        async.execute();*/
     }
 
     private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {

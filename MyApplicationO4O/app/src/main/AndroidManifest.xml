@@ -42,6 +42,7 @@
         <activity android:name=".ShowAdPicture"/>
         <activity android:name=".ProductInfo"/>
         <activity android:name=".PurchaseHistory"/>
+        <activity android:name=".Purchase_History_Select_Date"/>
 
         <service     android:name=".MyFirebaseMessagingService">
             <intent-filter>

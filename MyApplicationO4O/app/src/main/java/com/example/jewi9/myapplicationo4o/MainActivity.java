@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
                 class BtnAsyncTask extends AsyncTask{
                     String result="";
-                    String url = "http://192.168.28.219:8000/cart/user_signin/";
+                    String url = "http://192.168.0.2:8000/cart/user_signin/";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
