@@ -7,14 +7,14 @@ import collections
 import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from .forms import AdForm, CartForm, CouponForm, CameraForm, ItemForm, ItemsForm, MatrixForm
-from django.db.models import Q, QuerySet
+from .forms import CartForm, CouponForm, CameraForm, ItemForm, MatrixForm
+from django.db.models import Q
 import operator
 from django.utils import timezone
-from django.utils.timezone import localdate
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from pyfcm import FCMNotification
+from .views_sub import calculate, item_detail, item_ad, item_popular, item_price
 
 API_KEY = "AAAAMPLTW5s:APA91bF-UhyG6r2Y50WX5UE7bNCKKWYTZJFZA8qtKgOVGly_MEhgfnDUI8spG8myIZcwiVCVHOP_EUxHuXTDl1yhwMv8Cr5I6u9ZWF2D0iGOTyDqZhOyOWYvZCMZ-jBRQMs92mE2RkoO"
 push_service = FCMNotification(api_key=API_KEY)
@@ -25,29 +25,8 @@ def tree():
 
 
 @csrf_exempt
-def user_signup(request):
-    if request.method == 'POST':
-        request_json = (request.body).decode('utf-8')
-        request_data = json.loads(request_json)
-
-        result_id = request_data['id']
-        result_pwd = request_data['pwd']
-        result_age = int(request_data['age'])
-        result_sex = Sex_Info.objects.get(sex=request_data['sex'])
-
-        try:
-            Customer_Info.objects.filter(id=result_id)
-        except Customer_Info.DoesNotExist:
-            data = Customer_Info(id=result_id, pwd=result_pwd, age=result_age, sex=result_sex)
-            data.save()
-            return HttpResponse('Sign up Success\n')
-
-        return HttpResponse('You can\'t use this ID\n')
-
-
-@csrf_exempt
-def user_signin(request):
-    if request.method == 'POST':
+def user(request):
+    if request.method == 'GET':
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
@@ -67,17 +46,78 @@ def user_signin(request):
         else:
             return HttpResponse('Wrong Password\n')
 
+    elif request.method == 'PUT':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        result_id = request_data['id']
+        result_current_pwd = request_data['current_pwd']
+        result_new_pwd = request_data['new_pwd']
+
+        try:
+            real_pwd = Customer_Info.objects.get(id=result_id).pwd
+        except Customer_Info.DoesNotExist:
+            print('Wrong ID\n')
+            return HttpResponse('Wrong ID\n')
+
+        if real_pwd == result_current_pwd:
+            Customer_Info.objects.filter(id=result_id).update(pwd=result_new_pwd)
+            return HttpResponse('Your Password is updated\n')
+        else:
+            return HttpResponse('Wrong Current Password\n')
+
+    elif request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        result_id = request_data['id']
+        result_pwd = request_data['pwd']
+        result_age = int(request_data['age'])
+        result_sex = Sex_Info.objects.get(sex=request_data['sex'])
+
+        try:
+            Customer_Info.objects.filter(id=result_id)
+        except Customer_Info.DoesNotExist:
+            data = Customer_Info(id=result_id, pwd=result_pwd, age=result_age, sex=result_sex)
+            data.save()
+            return HttpResponse('Sign up Success\n')
+        return HttpResponse('You can\'t use this ID\n')
+
+    elif request.method == 'DELETE':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        result_id = request_data['id']
+        result_pwd = request_data['pwd']
+
+        try:
+            real_pwd = Customer_Info.objects.get(id=result_id).pwd
+        except Customer_Info.DoesNotExist:
+            print('Wrong ID\n')
+            return HttpResponse('Wrong ID\n')
+
+        if real_pwd == result_pwd:
+            Customer_Info.objects.filter(id=result_id).delete()
+            return HttpResponse('Your ID is deleted\n')
+        else:
+            return HttpResponse('Wrong Password\n')
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
 
 @csrf_exempt
-def coupon_check(request):
-    if request.method == 'POST':
+def coupon(request):
+    if request.method == 'GET':
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
         result_id = request_data['id']
 
         try:
-            coupons = Coupon_Item_Info.objects.filter(Q(customer=result_id) & Q(coupon_use=False) & Q(coupon_item__end_date__gte=timezone.now()))
+            coupons = Coupon_Item_Info.objects.filter(Q(customer=result_id)
+                                                      & Q(coupon_use=False)
+                                                      & Q(coupon_item__end_date__gte=timezone.now()))
         except Coupon_Item_Info.DoesNotExist:
             print('There is no valid coupon\n')
             return HttpResponse('There is no valid coupon\n')
@@ -90,32 +130,164 @@ def coupon_check(request):
             coupon_form[name]['serial_num'] = check.serial_num
             coupon_form[name]['name'] = check.coupon_item.item.name
             coupon_form[name]['discount'] = check.coupon_item.discount_rate
-            coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date())#.isoformat()
+            coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date())
             i = i + 1
 
         send_json = json.dumps(coupon_form, ensure_ascii=False)
         return HttpResponse(send_json)
 
+    elif request.method == 'PUT':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
 
-        '''
-        i = 0
+        result_item = str(request_data['item'])
+        result_id = str(request_data['id'])
+
+        item_name = Items.objects.get(name=result_item)
+
+        try:
+            coupons = Coupons_Item.objects.filter(item=item_name)
+        except Coupons_Item.DoesNotExist:
+            print('there is no coupon which have this item sort\n')
+
         for check in coupons:
-            if check.coupon_item.end_date > timezone.now():
-                name = 'coupon' + str(i + 1)
-                coupon_form[name]['serial_num'] = check.serial_num
-                coupon_form[name]['name'] = check.coupon_item.item.name
-                coupon_form[name]['discount'] = check.coupon_item.discount_rate
-                coupon_form[name]['datetime'] = str(check.coupon_item.end_date.date().isoformat())
-                i = i + 1
+            try:
+                coupon_test = Coupon_Item_Info.objects.filter(Q(coupon_item=check) & Q(coupon_use=False))
+            except Coupon_Item_Info.DoesNotExist:
+                continue
 
-        send_json = json.dumps(coupon_form, ensure_ascii=False)
+            coupon_send = coupon_test.first()
 
-        return HttpResponse(send_json)
-        '''
+            try:
+                cus = Customer_Info.objects.get(id=result_id)
+            except Customer_Info.DoesNotExist:
+                print('invalid customer ID\n')
+                HttpResponse('invalid customer ID\n')
+            Coupon_Item_Info.objects.filter(serial_num=coupon_send.serial_num).update(customer=cus)
+            return HttpResponse('You receive Coupon\n')
+
+        return HttpResponse('There is no Coupon\n')
+
+    elif request.method == 'POST':
+        form = CouponForm(request.POST)
+
+        form_name = form.data['name']
+        form_item = form.data['item']
+        form_discount_rate = form.data['discount_rate']
+        form_end_date = form.data['end_date']
+        form_inventory = form.data['inventory']
+
+        result_name = form_name
+        result_item = Items.objects.get(name=form_item)
+        result_discount_rate = form_discount_rate
+        result_end_date = form_end_date
+        result_inventory = int(form_inventory)
+
+        coupons = Coupons_Item(name=result_name, item=result_item, discount_rate=result_discount_rate,
+                               end_date=result_end_date, inventory=result_inventory)
+        coupons.save()
+
+        i = 0
+        while i < result_inventory:
+            serial = 'coupon' + result_name + str(i + 1) + str(random.randrange(10000, 100000))
+            item = Coupons_Item.objects.get(item=result_item)
+            use = False
+
+            coupon_item = Coupon_Item_Info(serial_num=serial, coupon_item=item, coupon_use=use)
+            coupon_item.save()
+            i = i + 1
+        return redirect('/admin/cart/coupons_item/')
+
+    elif request.method == 'DELETE':
+        print('Coupon Delete is not embodied\n')
+        pass
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
+@csrf_exempt
+def change_coupon_state(request):
+    if request.method == 'POST':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        count = len(request_data)
+
+        i = 0
+        while i < count:
+            serial = str(request_data['serial'+str(i+1)])
+            try:
+                Coupon_Item_Info.objects.filter(serial_num=serial).update(coupon_use=None)
+            except Coupon_Item_Info.DoesNotExist:
+                print('There is no Coupon item info '+serial+'\n')
+                HttpResponse('Your Coupon is invalid\n')
+            i = i + 1
+
+        return HttpResponse('Your Coupon is now ready to use\n')
+
+
+
+
+@csrf_exempt
+def cart(request):
+    if request.method == 'GET':
+        print('Cart Get is not embodied\n')
+        pass
+
+    elif request.method == 'PUT':
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
+
+        cart_serial = request_data['serial']
+        cus_id = request_data['id']
+
+        try:
+            owner_ob = Customer_Info.objects.get(id=cus_id)
+        except Customer_Info.DoesNotExist:
+            print('Customer ID invalid\n')
+            return HttpResponse('Customer ID invalid\n')
+
+        try:
+            Cart_Info.objects.filter(serial_num=cart_serial).update(owner=owner_ob)
+        except Cart_Info.DoesNotExist:
+            print('Cart QR code invalid\n')
+            return HttpResponse('Cart QR code invalid\n')
+
+        return HttpResponse('Cart Paring Success\n')
+
+    elif request.method == 'POST':
+        form = CartForm(request.POST)
+
+        form_num = form.data['num']
+
+        result_num = int(form_num)
+
+        if result_num <= 0:
+            return redirect('/admin/cart/cart_info/')
+
+        total_num = Cart_Info.objects.count()
+
+        i = 0
+        while i < result_num:
+            serial = 'cart' + str(total_num + i + 1) + str(random.randrange(10000, 100000))
+            data = Cart_Info(num=total_num + i + 1, serial_num=serial)
+            data.save()
+            i = i + 1
+        return redirect('/admin/cart/cart_info/')
+
+    elif request.method == 'DELETE':
+        print('Cart Delete is not embodied\n')
+        pass
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
 
 @csrf_exempt
 def pur_history(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
@@ -155,82 +327,183 @@ def pur_history(request):
         send_json = json.dumps(sorted_pur_history, ensure_ascii=False)
         return HttpResponse(send_json)
 
+    elif request.method == 'PUT':
+        print('Purchase History Put is not embodied\n')
+        pass
+
+    elif request.method == 'POST':
+        print('Purchase History Post is not embodied\n')
+        pass
+
+    elif request.method == 'DELETE':
+        print('Purchase History Delete is not embodied\n')
+        pass
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
 
 @csrf_exempt
-def comparing_product(request):
-    if request.method == 'POST':
+def camera(request):
+    if request.method == 'GET':
+        print('Camera Get is not embodied\n')
+        pass
+
+    elif request.method == 'PUT':
+        print('Camera Put is not embodied\n')
+        pass
+
+    elif request.method == 'POST':
+        form = CameraForm(request.POST)
+
+        form_num = form.data['num']
+
+        result_num = int(form_num)
+
+        if result_num <= 0:
+            return redirect('/admin/cart/camera_info/')
+
+        total_num = Camera_Info.objects.count()
+
+        i = 0
+        while i < result_num:
+            data = Camera_Info(num=total_num + i + 1)
+            data.save()
+            i = i + 1
+        return redirect('/admin/cart/camera_info/')
+
+    elif request.method == 'DELETE':
+        print('Camera Delete is not embodied\n')
+        pass
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
+
+@csrf_exempt
+def mv_history(request):
+    if request.method == 'GET':
         request_json = (request.body).decode('utf-8')
         request_data = json.loads(request_json)
 
-        serial = request_data['serial']
+        customer_id = request_data['id']
 
-        item_sort = Item_Info.objects.get(serial_num=serial).item.sort
-
-        sorted_items_form = tree()
-#--
         try:
-            item = Item_Info.objects.get(serial_num=serial)
-        except Item_Info.DoesNotExist:
-            print('Wrong Serial Number\n')
-            return HttpResponse('Wrong Serial Number\n')
+            mv_historys = Mv_History.objects.filter(customer=customer_id)
+        except Mv_History.DoesNotExist:
+            print('There is no Move history : ' + customer_id+'\n')
+            return HttpResponse('There is no move history\n')
 
-        sorted_items_form['item_info']['item_name'] = item.item.name
-        sorted_items_form['item_info']['inbound_date'] = str(item.inbound_date.date())
-        sorted_items_form['item_info']['expire_date'] = str(item.expire_date.date())
-        sorted_items_form['item_info']['price'] = item.item.price
-#--
-        try:
-            ad_data = Ad_Info.objects.all()
-        except Ad_Info.DoesNotExist:
-            print('There is no advertise information\n')
-            ad_data = None
+        sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
+
+        sorted_mv_historys_form = tree()
 
         i = 0
-        for check in ad_data:
-            if check.item.sort == item_sort:
-                name = 'ad' + str(i + 1)
-                sorted_items_form[name]['name'] = check.item.name
-                sorted_items_form[name]['inventory'] = check.item.inventory
-                sorted_items_form[name]['price'] = check.item.price
-                i = i + 1
-#--
-        try:
-            same_sort_items = Items.objects.filter(sort=item_sort)
-        except Items.DoesNotExist:
-            print('Same sort Items do not exist\n')
-            same_sort_items = None
-
-        same_sort_items_list = {}
-
-        for check in same_sort_items:
-            same_sort_items_list.update({check.name: 0})
-
-        for check in Pur_History.objects.all():
-            if check.item.item.sort == item_sort:
-                same_sort_items_list[check.item.item.name] = same_sort_items_list[check.item.item.name] + 1
-
-        sorted_pur_items = sorted(same_sort_items_list, key=lambda x: x[1], reverse=False)
-
-        i = 0
-        for check in sorted_pur_items:
-            name = 'popular' + str(i+1)
-            sorted_items_form[name]['name'] = check[0:]
-            i = i+1
-#--
-        items_list = Items.objects.filter(sort=item_sort)
-        sorted_items_list = sorted(items_list, key=lambda x: x.price, reverse=False)
-
-        i = 0
-        for check in sorted_items_list:
-            name = 'item' + str(i + 1)
-            sorted_items_form[name]['name'] = check.name
-            sorted_items_form[name]['inventory'] = check.inventory
-            sorted_items_form[name]['price'] = check.price
+        for check in sorted_mv_historys:
+            name = 'history' + str(i + 1)
+            sorted_mv_historys_form[name]['time'] = check.time
+            sorted_mv_historys_form[name]['camera_num'] = check.camera_num.num
+            sorted_mv_historys_form[name]['x'] = check.x
+            sorted_mv_historys_form[name]['y'] = check.y
             i = i + 1
 
-        send_json = json.dumps(sorted_items_form, ensure_ascii=False)
+        send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
 
         return HttpResponse(send_json)
+
+    elif request.method == 'PUT':
+        print('Move History Put is not embodied\n')
+        pass
+
+    elif request.method == 'POST':
+        print('Move History Post is not embodied\n')
+        pass
+
+    elif request.method == 'DELETE':
+        print('Move History Delete is not embodied\n')
+        pass
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
+@csrf_exempt
+def matrix(request):
+    if request.method == 'GET':
+        print('Matrix Get is not embodied\n')
+        pass
+    elif request.method == 'PUT':
+        print('Matrix Put is not embodied\n')
+        pass
+    elif request.method == 'POST':
+        form = MatrixForm(request.POST)
+
+        form_name = str(form.data['name'])
+        form_start_x = int(form.data['start_x'])
+        form_start_y = int(form.data['start_y'])
+        form_end_x = int(form.data['end_x'])
+        form_end_y = int(form.data['end_y'])
+
+        data = Matrix(name=form_name, start_x=form_start_x, start_y=form_start_y, end_x=form_end_x, end_y=form_end_y)
+        data.save()
+
+        return redirect('/admin/cart/matrix/')
+    elif request.method == 'DELETE':
+        print('Matrix Delete is not embodied\n')
+        pass
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
+@csrf_exempt
+def item(request):
+    if request.method == 'GET':
+        print('Item Get is not embodied\n')
+        pass
+
+    elif request.method == 'PUT':
+        print('Item Put is not embodied\n')
+        pass
+
+    elif request.method == 'POST':
+        form = ItemForm(request.POST)
+
+        form_item = form.data['item']
+        form_inbound_date = form.data['inbound_date']
+        form_expire_date = form.data['expire_date']
+        form_inventory = form.data['num']
+
+        result_item = Items.objects.get(name=form_item)
+        result_inbound_date = form_inbound_date
+        result_expire_date = form_expire_date
+        result_inventory = int(form_inventory)
+
+        if result_inventory <= 0:
+            return redirect('/admin/cart/item_info/')
+
+        total_num = Items.objects.get(name=result_item.name).inventory
+        Items.objects.filter(name=result_item.name).update(inventory=total_num + result_inventory)
+
+        i = 0
+        while i < result_inventory:
+            serial = result_item.name + str(total_num + result_inventory + i + 1) + str(random.randrange(10000, 100000))
+            data = Item_Info(serial_num=serial, item=result_item, inbound_date=result_inbound_date,
+                             expire_date=result_expire_date)
+            data.save()
+            i = i + 1
+
+        return redirect('/admin/cart/item_info/')
+
+    elif request.method == 'DELETE':
+        print('Item Delete is not embodied\n')
+        pass
+
+    else:
+        return HttpResponse('Wrong Restful Web Service HTTP method\n')
+
+
 
 
 
@@ -281,116 +554,6 @@ def receive_cartqrcode(serial, camera_number, x, y):  # qr코드 일련번호, �
                 data.save()
 
 
-@csrf_exempt
-def send_coupon(request):
-    if request.method == 'POST':
-        request_json = (request.body).decode('utf-8')
-        request_data = json.loads(request_json)
-
-        result_item = str(request_data['item'])
-        result_id = str(request_data['id'])
-
-        item_name = Items.objects.get(name=result_item)
-
-        try:
-            coupons = Coupons_Item.objects.filter(item=item_name)
-        except Coupons_Item.DoesNotExist:
-            print('there is no coupon which have this item sort\n')
-
-        for check in coupons:
-            try:
-                coupon_test = Coupon_Item_Info.objects.filter(Q(coupon_item=check) & Q(coupon_use=False))
-            except Coupon_Item_Info.DoesNotExist:
-                continue
-
-            coupon_send = coupon_test.first()
-
-            try:
-                cus = Customer_Info.objects.get(id=result_id)
-            except Customer_Info.DoesNotExist:
-                print('invalid customer ID\n')
-                HttpResponse('invalid customer ID\n')
-            Coupon_Item_Info.objects.filter(serial_num=coupon_send.serial_num).update(customer=cus)
-            return HttpResponse('You receive Coupon\n')
-
-        return HttpResponse('There is no Coupon\n')
-
-
-@csrf_exempt
-def send_mvhistory(request):
-    if request.method == 'POST':
-        request_json = (request.body).decode('utf-8')
-        request_data = json.loads(request_json)
-
-        customer_id = request_data['id']
-
-        try:
-            mv_historys = Mv_History.objects.filter(customer=customer_id)
-        except Mv_History.DoesNotExist:
-            print('There is no Move history : ' + customer_id+'\n')
-            return HttpResponse('There is no move history\n')
-
-        sorted_mv_historys = sorted(mv_historys, key=lambda x: x.time, reverse=False)
-
-        sorted_mv_historys_form = tree()
-
-        i = 0
-        for check in sorted_mv_historys:
-            name = 'history' + str(i + 1)
-            sorted_mv_historys_form[name]['time'] = check.time
-            sorted_mv_historys_form[name]['camera_num'] = check.camera_num.num
-            sorted_mv_historys_form[name]['x'] = check.x
-            sorted_mv_historys_form[name]['y'] = check.y
-            i = i + 1
-
-        send_json = json.dumps(sorted_mv_historys_form, ensure_ascii=False)
-
-        return HttpResponse(send_json)
-
-
-@csrf_exempt
-def cart_paring(request):
-    if request.method == 'POST':
-        request_json = (request.body).decode('utf-8')
-        request_data = json.loads(request_json)
-
-        cart_serial = request_data['serial']
-        cus_id = request_data['id']
-
-        try:
-            owner_ob = Customer_Info.objects.get(id=cus_id)
-        except Customer_Info.DoesNotExist:
-            print('Customer ID invalid\n')
-            return HttpResponse('Customer ID invalid\n')
-
-        try:
-            Cart_Info.objects.filter(serial_num=cart_serial).update(owner=owner_ob)
-        except Cart_Info.DoesNotExist:
-            print('Cart QR code invalid\n')
-            return HttpResponse('Cart QR code invalid\n')
-
-        return HttpResponse('Cart Paring Success\n')
-
-@csrf_exempt
-def change_coupon_state(request):
-    if request.method == 'POST':
-        request_json = (request.body).decode('utf-8')
-        request_data = json.loads(request_json)
-
-        count = len(request_data)
-
-        i = 0
-        while i < count:
-            serial = str(request_data['serial'+str(i+1)])
-            try:
-                Coupon_Item_Info.objects.filter(serial_num=serial).update(coupon_use=None)
-            except Coupon_Item_Info.DoesNotExist:
-                print('There is no Coupon item info '+serial+'\n')
-                HttpResponse('Your Coupon is invalid\n')
-            i = i + 1
-
-        return HttpResponse('Your Coupon is now ready to use\n')
-
 
 @csrf_exempt
 def do_payment(request):
@@ -406,7 +569,6 @@ def do_payment(request):
 
         things_to_buy_count = len(request_data) - 1
         final_payment_amount = 0
-        nocoupon_payment_amount = 0
 
         try:
             coupons_list = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
@@ -414,28 +576,7 @@ def do_payment(request):
             print('This Customer does not want to use Coupon\n')
             coupons_list = None
 
-        i = 0
-        while i < things_to_buy_count:
-            item_serial = str(request_data['serial'+str(i+1)])
-            try:
-                item_ob = Item_Info.objects.get(serial_num=item_serial).item
-            except Item_Info.DoesNotExist:
-                print('Invalid Item Serial\n')
-                continue
-            data = Pur_History(customer=customer_id, item=item_ob)
-            data.save()
-
-            coupon_use_checker = False
-            for coupon in coupons_list:
-                if coupon.coupon_item.item == item_ob and coupon.coupon_use == None:
-                    Coupon_Item_Info.objects.filter(serial_num=coupon.serial_num).update(coupon_use=True)
-                    final_payment_amount = final_payment_amount + (item_ob.price * (100 - coupon.coupon_item.discount_rate/100))
-                    coupon_use_checker = True
-                    break
-            if coupon_use_checker==True:
-                final_payment_amount = final_payment_amount + item_ob.price
-            nocoupon_payment_amount = nocoupon_payment_amount + item_ob.price
-            i = i + 1
+        final_payment_amount = calculate(things_to_buy_count, request_data, coupons_list, final_payment_amount, customer_id)
 
         try:
             not_use_coupons = Coupon_Item_Info.objects.filter(Q(customer=customer_id) & Q(coupon_use=None))
@@ -454,152 +595,26 @@ def do_payment(request):
         return HttpResponse(final_payment_amount)
 
 
-
-
-
-
-
-
-
-
-
-def cart_add(request):
+@csrf_exempt
+def comparing_product(request):
     if request.method == 'POST':
-        form = CartForm(request.POST)
+        request_json = (request.body).decode('utf-8')
+        request_data = json.loads(request_json)
 
-        form_num = form.data['num']
+        serial = request_data['serial']
 
-        result_num = int(form_num)
+        item_sort = Item_Info.objects.get(serial_num=serial).item.sort
 
-        if result_num <= 0:
-            return redirect('/admin/cart/cart_info/')
+        sorted_items_form = tree()
+#--
+        item_detail(sorted_items_form, serial)
+#--
+        item_ad(sorted_items_form, item_sort)
+#--
+        item_popular(sorted_items_form, item_sort)
+#--
+        item_price(sorted_items_form, item_sort)
 
-        total_num = Cart_Info.objects.count();
+        send_json = json.dumps(sorted_items_form, ensure_ascii=False)
 
-        i = 0
-        while i < result_num:
-            serial = 'cart' + str(total_num + i + 1) + str(random.randrange(10000, 100000))
-            data = Cart_Info(num=total_num + i + 1, serial_num=serial)
-            data.save()
-            i = i + 1
-    return redirect('/admin/cart/cart_info/')
-
-
-def coupon_add(request):
-    if request.method == 'POST':
-        form = CouponForm(request.POST)
-
-        form_name = form.data['name']
-        form_item = form.data['item']
-        form_discount_rate = form.data['discount_rate']
-        form_end_date = form.data['end_date']
-        form_inventory = form.data['inventory']
-
-        result_name = form_name
-        result_item = Items.objects.get(name=form_item)
-        result_discount_rate = form_discount_rate
-        result_end_date = form_end_date
-        result_inventory = int(form_inventory)
-
-        coupons = Coupons_Item(name=result_name, item=result_item, discount_rate=result_discount_rate,
-                               end_date=result_end_date, inventory=result_inventory)
-        coupons.save()
-
-        i = 0
-        while i < result_inventory:
-            serial = 'coupon' + result_name + str(i + 1) + str(random.randrange(10000, 100000))
-            item = Coupons_Item.objects.get(item=result_item)
-            use = False
-
-            coupon_item = Coupon_Item_Info(serial_num=serial, coupon_item=item, coupon_use=use)
-            coupon_item.save()
-            i = i + 1
-
-    return redirect('/admin/cart/coupons_item/')
-
-
-def camera_add(request):
-    if request.method == 'POST':
-        form = CameraForm(request.POST)
-
-        form_num = form.data['num']
-
-        result_num = int(form_num)
-
-        if result_num <= 0:
-            return redirect('/admin/cart/camera_info/')
-
-        total_num = Camera_Info.objects.count()
-
-        i = 0
-        while i < result_num:
-            data = Camera_Info(num=total_num + i + 1)
-            data.save()
-            i = i + 1
-
-    return redirect('/admin/cart/camera_info/')
-
-
-def items_add(request):
-    if request.method == 'POST':
-        form = ItemsForm(request.POST)
-
-        form_name = form.data['name']
-        form_price = form.data['price']
-        form_sort = form.data['sort']
-
-        result_name = form_name
-        result_price = form_price
-        result_sort = Item_Sort_Info.objects.get(sort=form_sort)
-
-        data = Items(name=result_name, price=result_price, sort=result_sort)
-        data.save()
-
-    return redirect('/admin/cart/items/')
-
-
-def item_add(request):
-    if request.method == 'POST':
-        form = ItemForm(request.POST)
-
-        form_item = form.data['item']
-        form_inbound_date = form.data['inbound_date']
-        form_expire_date = form.data['expire_date']
-        form_inventory = form.data['num']
-
-        result_item = Items.objects.get(name=form_item)
-        result_inbound_date = form_inbound_date
-        result_expire_date = form_expire_date
-        result_inventory = int(form_inventory)
-
-        if result_inventory <= 0:
-            return redirect('/admin/cart/item_info/')
-
-        total_num = Items.objects.get(name=result_item.name).inventory
-        Items.objects.filter(name=result_item.name).update(inventory=total_num + result_inventory)
-
-        i = 0
-        while i < result_inventory:
-            serial = result_item.name + str(total_num + result_inventory + i + 1) + str(random.randrange(10000, 100000))
-            data = Item_Info(serial_num=serial, item=result_item, inbound_date=result_inbound_date,
-                             expire_date=result_expire_date)
-            data.save()
-            i = i + 1
-
-    return redirect('/admin/cart/item_info/')
-
-
-def matrix_add(request):
-    if request.method == 'POST':
-        form = MatrixForm(request.POST)
-
-        form_name = str(form.data['name'])
-        form_start_x = int(form.data['start_x'])
-        form_start_y = int(form.data['start_y'])
-        form_end_x = int(form.data['end_x'])
-        form_end_y = int(form.data['end_y'])
-
-        data = Matrix(name=form_name, start_x=form_start_x, start_y=form_start_y, end_x=form_end_x, end_y=form_end_y)
-        data.save()
-
-    return redirect('/admin/cart/matrix/')
+        return HttpResponse(send_json)

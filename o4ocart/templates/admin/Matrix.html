@@ -2,13 +2,6 @@
 {% load static %}
 {% block content %}
     <h2>매장 좌표 추가</h2>
-    <!--
-    <iframe src = {% static "admin\crop\areacrop.htm" %} height="800" width="800"frameborder=0 framespacing=0 marginheight=0 marginwidth=0 scrolling=no vspace=0></iframe>
-    <div id="dv_1" style="width:150px;"  >
-         이곳에 표시할 껏이다.!!!
-</div>
--->
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js" type="text/javascript"></script>
@@ -58,7 +51,7 @@
 <div id="testWrap">
   <img src={% static "admin\crop\martmap_source.png"%} alt="test image" id="testImage" width="800" height="480" />
 </div>
-  <form method="POST" name="matrix_add" action="/cart/matrix_add/">
+  <form method="POST" name="matrix_add" action="/cart/matrix/">
 <p>
   <label for="x1">x1:</label>
   <input type="text" name="start_x" id="x1" />
