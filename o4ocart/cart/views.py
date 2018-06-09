@@ -477,7 +477,7 @@ def item_add(request):
 
         i = 0
         while i < result_inventory:
-            serial = result_item.name + str(total_num + result_inventory + i + 1) + str(random.randrange(10000, 100000))
+            serial = str(random.randrange(10, 10000000)) + str(random.randrange(10, 10000000)) + str(random.randrange(10, 10000000))
             data = Item_Info(serial_num=serial, item=result_item, inbound_date=result_inbound_date,
                              expire_date=result_expire_date)
             data.save()
