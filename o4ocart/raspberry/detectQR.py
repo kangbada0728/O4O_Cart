@@ -57,7 +57,7 @@ def detectQR(image_name):
             camera = Camera_Info.objects.get(num=camera_num)
             data = Mv_History(time=time_num, customer=cart_customer, camera_num=camera, x=coor_x, y=coor_y)
             data.save()
-            #receive_cartqrcode(serial,camera_num,coor_x,coor_y)
+            receive_cartqrcode(serial,camera_num,coor_x,coor_y)
 
             print("DB SAVED")
             #test_logger.info('python-logstash: test extra fields', extra=logdata)

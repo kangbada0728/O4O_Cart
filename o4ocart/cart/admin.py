@@ -1,32 +1,13 @@
 from django.contrib import admin
-from .models import Sex_Info,Customer_Info,Cart_Info,Item_Sort_Info
+from .models import Customer_Info,Cart_Info,Item_Sort_Info
 from .models import Items,Item_Info,Camera_Info,Pur_History,Mv_History, Matrix, Ad_checker
-from .models import Ad_Info,Coupons_Item,Coupon_Item_Info#,Coupons_Sort,Coupon_Sort_Info
+from .models import Ad_Info,Coupons_Item,Coupon_Item_Info
 from django.conf.urls import url
 from django.template.response import TemplateResponse
-from django.shortcuts import render
-from .forms import AdForm, CouponForm, CameraForm, CartForm, ItemForm, ItemsForm, MatrixForm
+from .forms import CouponForm, CameraForm, CartForm, ItemForm, MatrixForm
 
 
-# Register your models here.
-'''
-class Sex_Info_Admin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-class Temp(admin.ModelAdmin):
-    list_per_page = 10
-    list_display = ('id', 'age', 'sex', 'note',)
-    list_filter = ('age', 'sex',)
-    search_fields = ('id',)
-    ordering = ('-age',)
-'''
 class Customer_info_Admin(admin.ModelAdmin):
     list_per_page = 10
     list_display = ('id', 'age', 'sex', 'note',)
@@ -67,18 +48,9 @@ class Items_Admin(admin.ModelAdmin):
     list_filter = ('sort',)
     search_fields = ('name', 'sort',)
     ordering = ('name', 'inventory', 'price', 'sort',)
-
-    def get_urls(self):
-        urls = super(Items_Admin, self).get_urls()
-        item_urls = [url(r'^add/$', self.admin_site.admin_view(self.item_view))]
-        return item_urls + urls
-
-    def item_view(self, request):
-        context = dict(
-            self.admin_site.each_context(request),
-            form=ItemsForm()
-        )
-        return TemplateResponse(request, "admin/Items_Info.html", context)
+    fieldsets = [
+        ('추가할 상품 카테고리', {'fields': ['name', 'price', 'sort']})
+    ]
 
 
 class Item_Info_Admin(admin.ModelAdmin):
@@ -163,6 +135,7 @@ class Ad_info_Admin(admin.ModelAdmin):
     search_fields = ('item', 'camera_num', 'location',)
     ordering = ('item', 'camera_num', 'location',)
 
+
 class Ad_checker_Admin(admin.ModelAdmin):
     list_per_page = 100
     list_display = ('ad', 'customer', 'show_date',)
@@ -195,11 +168,7 @@ class Coupon_Item_Info_Admin(admin.ModelAdmin):
     list_display = ('serial_num', 'coupon_item', 'coupon_use', 'customer',)
     search_fields = ('serial_num', 'coupon_item', 'coupon_use', 'customer',)
 
-#return TemplateResponse(request, "admin/mv_history.html")
-#admin.site.site_title = 'test1'
-#admin.site.site_header = 'O4O Cart'
-#admin.site.index_title = '마트 관리 도구'
-#admin.site.register(Sex_Info)
+
 admin.site.register(Customer_Info, Customer_info_Admin)
 admin.site.register(Cart_Info, Cart_info_Admin)
 admin.site.register(Item_Sort_Info, Item_Sort_Info_Admin)

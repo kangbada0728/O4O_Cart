@@ -1,44 +1,40 @@
 {% extends "admin/base.html" %}
-{% load static %}
+	{% load static %}
 
 
 
-{% block title %}
-    {{ title }} | {{ site_title|default:_('Django site admin') }}
-{% endblock %}
+	{% block title %}
+	    {{ title }} | {{ site_title|default:_('Django site admin') }}
+	{% endblock %}
 
-{% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dropdown.css" %}" />
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/custom.css" %}" />
+	{% block extrastyle %}
+	    <link rel="stylesheet" type="text/css" href="{% static "admin/css/dropdown.css" %}" />
+	    <link rel="stylesheet" type="text/css" href="{% static "admin/css/custom.css" %}" />
 
-{% endblock %}
+	{% endblock %}
 
-{% block branding %}
-    <h1 id="site-name">
-        <a href="{% url 'admin:index' %}">
-            <img src="{% static 'admin/extra/cart.png' %}" height="40px" />
-        </a>
-    </h1>
-{% endblock %}
-
-
-
-
-{% block nav-global %}
-    <div id="gnb">
-        <div id="gnb-app-list">
-            <ul class="drop-down-menu">
-                {% for menu in gnb_menus %}
-                    <li>
-                        <a {%  if menu.url %}href="{{ menu.url }}"{% endif %}>{{ menu.name }}</a>
-                        <ul>
-                            {%  for sub_menu in menu.sub_menus %}
-                                <li><a href="{{ sub_menu.url }}">{{ sub_menu.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-{% endblock %}
+	{% block branding %}
+	    <h1 id="site-name">
+	        <a href="{% url 'admin:index' %}">
+	            <img src="{% static 'admin/extra/cart.png' %}" height="40px" />
+	        </a>
+	    </h1>
+	{% endblock %}
+	{% block nav-global %}
+	    <div id="gnb">
+	        <div id="gnb-app-list">
+	            <ul class="drop-down-menu">
+	                {% for menu in gnb_menus %}
+	                    <li>
+	                        <a {%  if menu.url %}href="{{ menu.url }}"{% endif %}>{{ menu.name }}</a>
+	                        <ul>
+	                            {%  for sub_menu in menu.sub_menus %}
+	                                <li><a href="{{ sub_menu.url }}">{{ sub_menu.name }}</a></li>
+	                            {% endfor %}
+	                        </ul>
+	                    </li>
+	                {% endfor %}
+	            </ul>
+	        </div>
+	    </div>
+	{% endblock %}

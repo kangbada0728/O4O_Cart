@@ -19,6 +19,8 @@ from PIL import Image, ImageDraw, ImageFont
 @csrf_exempt
 def draw(request):
     if request.method == 'POST':
+        im = Image.open(path).convert("RGBA")
+        im.save('draw\\result\\out.png')
         form = Img_Selector_Form(request.POST)
 
         form_customer = form.data['customer']
