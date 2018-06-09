@@ -10,8 +10,11 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -21,7 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -86,9 +92,6 @@ public class Purchase_History_Select_Date extends Activity {
                     e.printStackTrace();
                 }
                 class BtnAsyncTask extends AsyncTask {
-                    String result="";
-                    String url = "http://192.168.0.2:8000/cart/pur_history/";
-
                     @Override
                     protected void onPostExecute(Object o) {
                         super.onPostExecute(o);
@@ -98,108 +101,42 @@ public class Purchase_History_Select_Date extends Activity {
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
-                        String json="";
-                        JSONObject jsonObject = new JSONObject();
+                        InputStream inputStream = null;
+                        String result="";
                         try {
-                            jsonObject.accumulate("id",MainActivity.id_string);
-                            jsonObject.accumulate("start_date",StartTimestamp);
-                            jsonObject.accumulate("end_date",EndTimestamp);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                            HttpClient client = new DefaultHttpClient();
+                            String getURL = "http://192.168.19.22:8000/cart/pur_history/" + MainActivity.id_string + "/" + StartTimestamp +"/"+ EndTimestamp+"/";
 
-                        json = jsonObject.toString();
-                        Log.d("resultPur@@@@@@", "resultPur@@@@@@: " + json);
-
-                        try {
-                            result = goHttpPost(url, json);
+                            HttpGet get = new HttpGet(getURL);
+                            HttpResponse responseGet = client.execute(get);
+                            inputStream = responseGet.getEntity().getContent();
+                            if (inputStream != null) {
+                                result = convertInputStreamToString(inputStream);
+                                pur_history_jsonobj = new JSONObject(result);
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
-                        }
-                        try {
-                            pur_history_jsonobj = new JSONObject(result);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         return null;
-                    }
-
-                    public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
-                        String msg = null; //http 연결 인증
-                        DefaultHttpClient client = new DefaultHttpClient();
-                        HttpPost httppost = new HttpPost(host);
-
-                        try {
-                            httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
-                        }
-                        catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
-                        }
-                        ResponseHandler responseHandler = new BasicResponseHandler();
-                        msg = (String) client.execute(httppost, responseHandler);
-
-                        return msg;
                     }
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
             }
         });
-        /*class BtnAsyncTask extends AsyncTask {
-            String result="";
-            String url = "http://192.168.0.2:8000/cart/pur_history/";
 
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                Intent intent = new Intent( Purchase_History_Select_Date.this, PurchaseHistory.class);
-                startActivity( intent );
-            }
+    }
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
 
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                String json="";
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.accumulate("id",MainActivity.id_string);
-                    jsonObject.accumulate("start_date",StartTimestamp);
-                    jsonObject.accumulate("end_date",EndTimestamp);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        inputStream.close();
+        return result;
 
-                json = jsonObject.toString();
-                Log.d("resultPur@@@@@@", "resultPur@@@@@@: " + json);
-
-                try {
-                    result = goHttpPost(url, json);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    pur_history_jsonobj = new JSONObject(result);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
-                String msg = null; //http 연결 인증
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost(host);
-
-                try {
-                    httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
-                }
-                catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
-                }
-                ResponseHandler responseHandler = new BasicResponseHandler();
-                msg = (String) client.execute(httppost, responseHandler);
-
-                return msg;
-            }
-        }
-        BtnAsyncTask async = new BtnAsyncTask();
-        async.execute();*/
     }
 }

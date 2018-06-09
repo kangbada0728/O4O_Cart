@@ -13,8 +13,11 @@ import android.widget.Toast;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
                 class BtnAsyncTask extends AsyncTask{
                     String result="";
-                    String url = "http://192.168.0.2:8000/cart/user_signin/";
+                    String url = "http://192.168.19.22:8000/cart/user_signin/";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -79,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        /*if(result.equals("success")){
+                        if(result.equals("Login Success")){
                             Intent intent = new Intent(MainActivity.this,Menu.class);
                             startActivity(intent);//메뉴로 화면 전환!!
-                        }*/
+                        }
 
                         return null;
                     }
@@ -97,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         ResponseHandler responseHandler = new BasicResponseHandler();
                         msg = (String) client.execute(httppost, responseHandler);
-
                         return msg;
                     }
                 }

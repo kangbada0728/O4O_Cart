@@ -16,8 +16,12 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -31,8 +35,12 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 public class Menu extends AppCompatActivity
 {
@@ -76,121 +84,73 @@ public class Menu extends AppCompatActivity
             Toast.makeText(this, barcode, Toast.LENGTH_LONG).show();
 
             class BtnAsyncTask extends AsyncTask {
-                String result="";
-                String url = "http://192.168.0.2:8000/cart/comparing_product/";//나중에 원격서버주소로 변경!!!!!!!!!
+
                 @Override
                 protected void onPostExecute(Object o) {
                     super.onPostExecute(o);
                     Intent intent = new Intent( Menu.this, Swipe_Compare.class);
                     startActivity(intent);
-
                 }
                 @Override
                 protected Object doInBackground(Object[] objects) {
-                    String json="";
-                    JSONObject jsonObject = new JSONObject();
+                    InputStream inputStream = null;
+                    String result="";
+                    try {
+                        HttpClient client = new DefaultHttpClient();
+                        String getURL = "http://192.168.19.22:8000/cart/comparing_product/" + barcode + "/";
 
-                    try {
-                        jsonObject.accumulate("serial",barcode);
-                        Log.d("barcodeSerial", "barcodeSerial@@@@@@ in Menu.java: " + barcode);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    json = jsonObject.toString();
-                    try {
-                        result = goHttpPost(url, json);
-                        Log.d("productresult@@@@@@", "productResult@@@@@@: " + result);
+                        HttpGet get = new HttpGet(getURL);
+                        HttpResponse responseGet = client.execute(get);
+                        inputStream = responseGet.getEntity().getContent();
+                        if (inputStream != null) {
+                            result = convertInputStreamToString(inputStream);
+                            product_jsonobject = new JSONObject(result);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-
-                    try {
-                        product_jsonobject = new JSONObject(result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     return null;
                 }
-                public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
-                    String msg = null; //http 연결 인증
-                    DefaultHttpClient client = new DefaultHttpClient();
-                    HttpPost httppost = new HttpPost(host);
-
-                    try {
-                        httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
-                    }
-                    catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
-                    }
-                    ResponseHandler responseHandler = new BasicResponseHandler();
-                    msg = (String) client.execute(httppost, responseHandler);
-                    return msg;
-                }
             }
             BtnAsyncTask async = new BtnAsyncTask();
             async.execute();
-
         }
     }
-
-
 
     /*쿠폰보기 버튼 클릭*/
     public void onClickCoupon(View view)
     {
-        //서버에 요청을 보낸다.(보낼값: token, id)
         class BtnAsyncTask extends AsyncTask {
-            String result="";
-            String url = "http://192.168.0.2:8000/cart/coupon_check/";
 
             @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 Intent intent = new Intent( Menu.this, Coupon.class);
-                startActivity( intent );
+                startActivity(intent);
             }
-
             @Override
             protected Object doInBackground(Object[] objects) {
-                String json="";
-                JSONObject jsonObject = new JSONObject();
+                InputStream inputStream = null;
+                String result="";
                 try {
-                    jsonObject.accumulate("token",FirebaseInstanceId.getInstance().getToken());
-                    Log.d("token", "token@@@@@@ in Menu.java: " + FirebaseInstanceId.getInstance().getToken());
-                    jsonObject.accumulate("id",MainActivity.id_string);
-                    Log.d("id", "id@@@@@@ in Menu.java: " + MainActivity.id_string);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    HttpClient client = new DefaultHttpClient();
+                    String getURL = "http://192.168.19.22:8000/cart/coupon_check/" + MainActivity.id_string + "/";
 
-                json = jsonObject.toString();
-                try {
-                    result = goHttpPost(url, json);
+                    HttpGet get = new HttpGet(getURL);
+                    HttpResponse responseGet = client.execute(get);
+                    inputStream = responseGet.getEntity().getContent();
+                    if (inputStream != null) {
+                        result = convertInputStreamToString(inputStream);
+                        coupon_jsonobject = new JSONObject(result);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                Log.d("result@@@@@@", "result1@@@@@@: " + result);
-                try {
-                    coupon_jsonobject = new JSONObject(result);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 return null;
-            }
-
-            public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
-                String msg = null; //http 연결 인증
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost(host);
-
-                try {
-                    httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
-                }
-                catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
-                }
-                ResponseHandler responseHandler = new BasicResponseHandler();
-                msg = (String) client.execute(httppost, responseHandler);
-
-                return msg;
             }
         }
         BtnAsyncTask async = new BtnAsyncTask();
@@ -207,64 +167,18 @@ public class Menu extends AppCompatActivity
     {
         Intent intent = new Intent( Menu.this, Purchase_History_Select_Date.class);
         startActivity( intent );
-        /*class BtnAsyncTask extends AsyncTask {
-            String result="";
-            String url = "http://192.168.0.26:8000/cart/pur_history/";
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                Intent intent = new Intent( Menu.this, PurchaseHistory.class);
-                startActivity( intent );
-            }
-
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                String json="";
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.accumulate("id",MainActivity.id_string);
-
-                    //나중에 시간정보도 함께 넘겨야 됨.!!!!!!
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                json = jsonObject.toString();
-                try {
-                    result = goHttpPost(url, json);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Log.d("resultPur@@@@@@", "resultPur@@@@@@: " + result);
-                try {
-                    pur_history_jsonobj = new JSONObject(result);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            public String goHttpPost(String host, String json) throws ClientProtocolException, IOException {
-                String msg = null; //http 연결 인증
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost(host);
-
-                try {
-                    httppost.setEntity(new StringEntity(json, HTTP.UTF_8));
-                }
-                catch (UnsupportedEncodingException e) { // TODO Auto-generated catch block e.printStackTrace();
-                }
-                ResponseHandler responseHandler = new BasicResponseHandler();
-                msg = (String) client.execute(httppost, responseHandler);
-
-                return msg;
-            }
-        }
-        BtnAsyncTask async = new BtnAsyncTask();
-        async.execute();*/
     }
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
 
+        inputStream.close();
+        return result;
+
+    }
     private class DrawerItemClickListener implements android.widget.AdapterView.OnItemClickListener {
 
         @Override

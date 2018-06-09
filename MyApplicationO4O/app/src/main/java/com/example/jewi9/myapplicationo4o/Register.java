@@ -62,7 +62,7 @@ public class Register extends AppCompatActivity
 
                 class BtnAsyncTask extends AsyncTask {
                     String result = "";
-                    String url = "http://192.168.0.2:8000/cart/user_signup/";
+                    String url = "http://192.168.19.22:8000/cart/user_signup/";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -94,6 +94,10 @@ public class Register extends AppCompatActivity
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        if(result.equals("Sign up Success")){
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                        }
                         return null;
                     }
 
@@ -114,8 +118,7 @@ public class Register extends AppCompatActivity
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
+
             }
         };
         Button btn_reg_complete = (Button) findViewById(R.id.button);

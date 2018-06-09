@@ -55,7 +55,7 @@ public class CartPairing extends AppCompatActivity
                 class BtnAsyncTask extends AsyncTask
                 {
                     String result="";
-                    String url = "http://192.168.0.2:8000/cart/cart_paring/";
+                    String url = "http://192.168.19.22:8000/cart/cart_paring/";
                     @Override
                     protected Object doInBackground(Object[] objects)
                     {
@@ -94,6 +94,8 @@ public class CartPairing extends AppCompatActivity
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
+                Intent intent = new Intent(getApplicationContext(), Menu.class);
+                startActivity(intent);
             }
         }
         else{

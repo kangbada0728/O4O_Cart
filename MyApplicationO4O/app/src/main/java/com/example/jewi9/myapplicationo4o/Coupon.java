@@ -44,10 +44,9 @@ public class Coupon extends AppCompatActivity {
 
         ListViewAdapter_Coupon adapter;
         listView =(ListView)findViewById(R.id.List_view);
-        adapter = new ListViewAdapter_Coupon() ;
+        adapter = new ListViewAdapter_Coupon();
 
         num_of_coupon = menu.coupon_jsonobject.length();
-
         // 리스트뷰 참조 및 Adapter달기
         listView.setAdapter(adapter);
 
@@ -79,7 +78,7 @@ public class Coupon extends AppCompatActivity {
                 class BtnAsyncTask extends AsyncTask
                 {
                     String result="";
-                    String url = "http://192.168.0.2:8000/cart/change_coupon_state/";
+                    String url = "http://192.168.19.22:8000/cart/change_coupon_state/";
                     //int num_of_selected=0;
 
                     @Override
@@ -125,6 +124,8 @@ public class Coupon extends AppCompatActivity {
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
+                Intent intent = new Intent(getApplicationContext(), Menu.class);
+                startActivity(intent);
             }
         });
     }
