@@ -82,7 +82,7 @@ class Pur_History(models.Model):
     class Meta:
         verbose_name_plural="고객 구매정보"
         verbose_name = "고객 구매정보"
-    time = models.DateTimeField(auto_now_add=True,verbose_name='구매시간', primary_key=True, null=False)
+    time = models.DateTimeField(auto_now_add=True,verbose_name='구매시간', null=False)
     customer = models.ForeignKey(Customer_Info, on_delete=models.CASCADE, null=False, verbose_name='구매고객')
     item = models.ForeignKey(Item_Info, on_delete=models.CASCADE, null=False, verbose_name='구매상품')
 
