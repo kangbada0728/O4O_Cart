@@ -3,6 +3,7 @@ package com.example.jewi9.cashier;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,12 +30,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
     String barcode=null;
-    static JSONObject  jsonObject = new JSONObject();
-    int number_of_product=0;
+     JSONObject  jsonObject = new JSONObject();
+
+    int number_of_product = 0;
     //private ImageButton setting_btn;
 
     @Override
@@ -69,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         if(resultCode == RESULT_CANCELED)
         {
             Intent i = new Intent( MainActivity.this, InputUserID.class);
+            Log.d("@@@@@@PP","@@@@@@PP" + jsonObject.toString());
+
+            i.putExtra("json", jsonObject.toString());
+
             startActivity(i);
         }
     }

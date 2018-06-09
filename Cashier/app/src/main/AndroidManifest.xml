@@ -26,7 +26,6 @@
 
         <activity android:name=".InputUserID"/>
         <activity android:name=".BarcodeScan"/>
-
     </application>
 
 </manifest>

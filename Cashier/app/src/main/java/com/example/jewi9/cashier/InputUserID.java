@@ -22,20 +22,27 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import static com.example.jewi9.cashier.MainActivity.jsonObject;
+//import static com.example.jewi9.cashier.MainActivity.jsonObject;
 
 public class InputUserID extends AppCompatActivity
 {
-
     private EditText id;
     public static String id_string;
+
+    JSONObject jsonObject;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.input_user_id);
+        {
+            try {
+                jsonObject = new JSONObject(getIntent().getStringExtra("json"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         id = (EditText) findViewById(R.id.id);
-        Log.d("productinInput@@@@@@", "productinInput@@@@@@: " + jsonObject);
 
         Button complete_barcode = (Button) findViewById(R.id.complete);
         complete_barcode.setOnClickListener(new View.OnClickListener() {
@@ -45,8 +52,15 @@ public class InputUserID extends AppCompatActivity
 
                 class BtnAsyncTask extends AsyncTask {
 
+                    @Override
+                    protected void onPostExecute(Object o) {
+                        super.onPostExecute(o);
+                        Intent i = new Intent( InputUserID.this, MainActivity.class);
+                        startActivity(i);
+                    }
+
                     String result="";
-                    String url = "http://192.168.0.26:8000/cart/do_payment/";
+                    String url = "http://192.168.19.22:8000/cart/do_payment/";
                     @Override
                     protected Object doInBackground(Object[] objects) {
                         String json = "";
@@ -83,8 +97,6 @@ public class InputUserID extends AppCompatActivity
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
-                Intent i = new Intent( InputUserID.this, MainActivity.class);
-                startActivity(i);
             }
         });
     }
