@@ -12,8 +12,8 @@ script_path = os.getcwd()
 #o4ocart 폴더(앱있는곳)
 print(script_path)
 path= os.path.join(script_path,"draw","sources" ,"martmap_source.png" ).replace('\\', '/')
-font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
-
+#font_path = os.path.join(script_path,"draw","sources" ,"NanumBarunGothicLight.ttf" ).replace('\\', '/')
+font_path = os.path.join(script_path,"draw","sources" ,"arial" ).replace('\\', '/')
 
 im = Image.open(path).convert("RGBA")
 font_order = ImageFont.truetype(font_path,10)

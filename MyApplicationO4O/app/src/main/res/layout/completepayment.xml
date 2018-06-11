@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="300sp"
+        android:id="@+id/text1"
+        android:gravity="center|bottom"
+        android:textSize="20dp"
+        android:text="총 결제금액은"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/text2"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:text="1111111111111111111"
+        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/text3"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:text="입니다."
+            />
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
