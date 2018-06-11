@@ -97,7 +97,7 @@ public class Menu extends AppCompatActivity
                     String result="";
                     try {
                         HttpClient client = new DefaultHttpClient();
-                        String getURL = "http://192.168.19.22:8000/cart/comparing_product/" + barcode + "/";
+                        String getURL = "http://"+MainActivity.ipAddress+"/cart/comparing_product/" + barcode + "/";
 
                         HttpGet get = new HttpGet(getURL);
                         HttpResponse responseGet = client.execute(get);
@@ -136,7 +136,7 @@ public class Menu extends AppCompatActivity
                 String result="";
                 try {
                     HttpClient client = new DefaultHttpClient();
-                    String getURL = "http://192.168.19.22:8000/cart/coupon_check/" + MainActivity.id_string + "/";
+                    String getURL = "http://"+MainActivity.ipAddress+"/cart/coupon_check/" + MainActivity.id_string + "/";
 
                     HttpGet get = new HttpGet(getURL);
                     HttpResponse responseGet = client.execute(get);

@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.security.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class PurchaseHistory extends AppCompatActivity {
@@ -37,24 +38,25 @@ public class PurchaseHistory extends AppCompatActivity {
             try {
                 JSONObject productHistory= (JSONObject)purchase_history_select_date.pur_history_jsonobj.get("history"+Integer.toString(i+1));
                 Log.d("@@@@@@purchase","@@@@@@purchase"+productHistory);
-                /*String x = productHistory.getString("time");
-                String splited = x.split(".")[0];
 
+                String changedDate=null;
+                Calendar cal = Calendar.getInstance();
+                String tmp = productHistory.getString("time");
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try {
+                    Date date = sdf.parse(tmp);
+                    cal.setTime(date);
+                    cal.add(Calendar.HOUR,9);
+                    changedDate = sdf.format(cal.getTime());
+                    Log.d("time@@@@@@","time@@@@@@"+changedDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
-
-               // "yyyy-MM-dd HH:mm:ss.SSS";
-                SimpleDateFormat purchaseTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                Date date = purchaseTime.parse(splited);
-                Log.d("@@@@@@time","@@@@@@time"+date.getTime());
-
-               // Timestamp tstamp = new Timestamp(date.getTime());
-                //Log.d("@@@@@@time","@@@@@@time"+String.valueOf(purchaseTime.parse(date_str)));
-
-*/
                 String productName = productHistory.getString("item");
                 String price = productHistory.getString("price"); price = price + "원";
-                String purchaseDate = productHistory.getString("time");
+                //String purchaseDate = productHistory.getString("time");
+                String purchaseDate = changedDate;
 
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.o4o), productName, price,purchaseDate);
             } catch (JSONException e) {

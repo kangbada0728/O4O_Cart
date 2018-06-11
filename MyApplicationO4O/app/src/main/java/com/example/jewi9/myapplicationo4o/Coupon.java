@@ -78,7 +78,7 @@ public class Coupon extends AppCompatActivity {
                 class BtnAsyncTask extends AsyncTask
                 {
                     String result="";
-                    String url = "http://192.168.19.22:8000/cart/change_coupon_state/";
+                    String url = "http://"+MainActivity.ipAddress+"/cart/change_coupon_state/";
                     //int num_of_selected=0;
 
                     @Override

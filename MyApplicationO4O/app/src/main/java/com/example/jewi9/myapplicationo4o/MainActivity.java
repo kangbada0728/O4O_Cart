@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
+    public static String ipAddress="192.168.23.169:8000";
 
     private EditText id;
     private EditText pw;
@@ -57,8 +58,17 @@ public class MainActivity extends AppCompatActivity {
                 pw_string = pw.getText().toString();
 
                 class BtnAsyncTask extends AsyncTask{
+
+                    @Override
+                    protected void onPostExecute(Object o) {
+                        super.onPostExecute(o);
+                        if(result.equals("200")){
+                            Intent intent = new Intent(MainActivity.this,Menu.class);
+                            startActivity(intent);//메뉴로 화면 전환!!
+                        }
+                    }
                     String result="";
-                    String url = "http://192.168.19.22:8000/cart/user_signin/";
+                    String url = "http://"+MainActivity.ipAddress+"/cart/user_signin/";
 
                     @Override
                     protected Object doInBackground(Object[] objects) {
@@ -78,14 +88,13 @@ public class MainActivity extends AppCompatActivity {
                         json = jsonObject.toString();
                         try {
                             result = goHttpPost(url, json);
+                            Log.d("@@@@@@login","@@@@@@login  "+result);
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 
-                        if(result.equals("Login Success")){
-                            Intent intent = new Intent(MainActivity.this,Menu.class);
-                            startActivity(intent);//메뉴로 화면 전환!!
-                        }
+
 
                         return null;
                     }
@@ -105,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 BtnAsyncTask async = new BtnAsyncTask();
                 async.execute();
-                Intent intent = new Intent(MainActivity.this,Menu.class);
-                startActivity(intent);//메뉴로 화면 전환!!
+
             }
         });
     }

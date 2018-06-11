@@ -105,7 +105,7 @@ public class Purchase_History_Select_Date extends Activity {
                         String result="";
                         try {
                             HttpClient client = new DefaultHttpClient();
-                            String getURL = "http://192.168.19.22:8000/cart/pur_history/" + MainActivity.id_string + "/" + StartTimestamp +"/"+ EndTimestamp+"/";
+                            String getURL = "http://"+MainActivity.ipAddress+"/cart/pur_history/" + MainActivity.id_string + "/" + StartTimestamp +"/"+ EndTimestamp+"/";
 
                             HttpGet get = new HttpGet(getURL);
                             HttpResponse responseGet = client.execute(get);
