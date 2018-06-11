@@ -60,9 +60,10 @@ def user_signin(request):
         if real_pwd == result_pwd:
             Customer_Info.objects.filter(id=result_id).update(reg_id=result_reg_id)
             print('Login Success')
-            return HttpResponse('Login Success\n')
+            return HttpResponse('200')
         else:
-            return HttpResponse('Wrong Password\n')
+            print('Login Denied')
+            return HttpResponse('202')
 
 
 @csrf_exempt
