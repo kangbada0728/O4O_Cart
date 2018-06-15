@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
-    public static String ipAddress="192.168.23.169:8000";
+    public static String ipAddress="172.20.10.4:8000";
 
     private EditText id;
     private EditText pw;
@@ -62,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     protected void onPostExecute(Object o) {
                         super.onPostExecute(o);
-                        if(result.equals("200")){
+                        //if(result.equals("200")){
                             Intent intent = new Intent(MainActivity.this,Menu.class);
                             startActivity(intent);//메뉴로 화면 전환!!
-                        }
+                        //}
                     }
                     String result="";
                     String url = "http://"+MainActivity.ipAddress+"/cart/user_signin/";

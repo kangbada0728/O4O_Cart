@@ -36,9 +36,9 @@ def user_signup(request):
             data = Customer_Info(id=result_id, pwd=result_pwd, age=result_age, sex=result_sex)
             data.save()
 
-            return HttpResponse('Sign up Success\n')
+            return HttpResponse('200')
 
-        return HttpResponse('You can\'t use this ID\n')
+        return HttpResponse('202')
 
 
 @csrf_exempt
@@ -257,10 +257,12 @@ def send_coupon(request):
         try:
             coupons = Coupons_Item.objects.filter(item=item_name)
         except Coupons_Item.DoesNotExist:
-            print('there is no coupon which have this item sort\n')
+            print('##############################################################there is no coupon which have this item sort\n')
 
         for check in coupons:
+
             try:
+                print('##############################################################AAAAAAAAAAAAAAAAAAAAAAAAAat\n')
                 coupon_test = Coupon_Item_Info.objects.filter(Q(coupon_item=check) & Q(coupon_use=False))
             except Coupon_Item_Info.DoesNotExist:
                 continue
@@ -268,6 +270,7 @@ def send_coupon(request):
             coupon_send = coupon_test.first()
 
             try:
+                print('##############################################################BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n')
                 cus = Customer_Info.objects.get(id=result_id)
             except Customer_Info.DoesNotExist:
                 print('invalid customer ID\n')
@@ -276,10 +279,6 @@ def send_coupon(request):
             return HttpResponse('You receive Coupon\n')
 
         return HttpResponse('There is no Coupon\n')
-
-
-
-
 
 @csrf_exempt
 def cart_paring(request):
@@ -367,15 +366,6 @@ def do_payment(request):
 
         push_service.notify_single_device(registration_id=customer_id.reg_id, message_title='결제금액', message_body=final_payment_amount)
         return HttpResponse(final_payment_amount)
-
-
-
-
-
-
-
-
-
 
 
 def cart_add(request):

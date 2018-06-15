@@ -1,5 +1,8 @@
 from django.http import HttpResponse
 from .models import *
+import logging
+import logstash
+from logstash_formatter import LogstashFormatterV1
 
 
 def print_item_info(serial_temp, sorted_items_form):
@@ -73,6 +76,14 @@ def print_price_info(item_sort, sorted_items_form):
 
 
 def calculate(things_to_buy_count, request_data, customer_id, coupons_list, final_payment_amount, nocoupon_payment_amount):
+    host = '127.0.0.1'
+    test_logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    formatter = LogstashFormatterV1()
+    handler.setFormatter(formatter)
+
+    test_logger.setLevel(logging.INFO)
+    test_logger.addHandler(logstash.LogstashHandler(host, 5000, version=1))
     i = 0
     while i < things_to_buy_count:
         item_serial = str(request_data['serial' + str(i + 1)])
@@ -86,9 +97,14 @@ def calculate(things_to_buy_count, request_data, customer_id, coupons_list, fina
 
         print(customer_id)
 
-        data = Pur_History(customer=customer_id, item=item_ob_info)
-        data.save()
+        logdata ={
+            'serial':item_serial,
+            }
 
+        data = Pur_History(customer=customer_id, item=item_ob_info)
+        print(data)
+        data.save()
+        test_logger.info('python-logstash: test extra fields', extra=logdata)
         coupon_use_checker = False
         for coupon in coupons_list:
             if coupon.coupon_item.item == item_ob and coupon.coupon_use == None:
@@ -107,17 +123,3 @@ def calculate(things_to_buy_count, request_data, customer_id, coupons_list, fina
         i = i + 1
 
     return final_payment_amount
-
-
-
-
-
-
-
-
-
-
-
-
-
-

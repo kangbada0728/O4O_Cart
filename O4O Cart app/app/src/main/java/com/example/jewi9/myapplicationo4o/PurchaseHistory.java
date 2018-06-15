@@ -33,7 +33,7 @@ public class PurchaseHistory extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.listview1);
         listview.setAdapter(adapter);
 
-        for(int i = 0 ;i<purchase_history_select_date.pur_history_jsonobj.length()-1;i++)
+        for(int i = 0 ;i<purchase_history_select_date.pur_history_jsonobj.length();i++)
         {
             try {
                 JSONObject productHistory= (JSONObject)purchase_history_select_date.pur_history_jsonobj.get("history"+Integer.toString(i+1));

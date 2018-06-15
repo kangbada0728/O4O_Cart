@@ -10,7 +10,7 @@ from cart.models import Customer_Info, Sex_Info, Cart_Info, Ad_Info, Camera_Info
 import collections
 from cart.views import receive_cartqrcode
 
-mul = 0.66
+mul = 0.416
 #사진배율
 
 def detectQR(image_name):
@@ -32,26 +32,26 @@ def detectQR(image_name):
 
     if(len(csv)==2) :
         print("NO QR DETECETED")
-        print(csv)
+        #print(csv)
     else:
         print("QR DETECTED############################")
-        print(csv)
+        #print(csv)
         for i in range(0, int(len(csv)/3)):
             logdata ={
-                'cartID':int(csv[i+1]),
+                'cartID':int(csv[3*i+1]),
                 'camID':int(csv[0]),
-                'x':int(csv[i+2]),
-                'y':int(csv[i+3]),
+                'x':int(mul*int(csv[3*i+2])),
+                'y':int(mul*int(csv[3*i+3])),
                 }
                 #'time': int(timestamp),
             #data_json = json.dumps(data, indent = 2)
-
+            print(logdata)
             time_num = int(float(timestamp))
             #serial = 'cart128644'
-            serial = str(int(csv[i+1]))
+            serial = str(int(csv[3*i+1]))
             camera_num = int(csv[0])
-            coor_x = mul*int(csv[i+2])
-            coor_y = mul*int(csv[i+3])
+            coor_x = int(mul*int(csv[3*i+2]))
+            coor_y = int(mul*int(csv[3*i+3]))
 
             cart_customer = Cart_Info.objects.get(serial_num=serial).owner
             camera = Camera_Info.objects.get(num=camera_num)
@@ -60,5 +60,5 @@ def detectQR(image_name):
             receive_cartqrcode(serial,camera_num,coor_x,coor_y)
 
             print("DB SAVED")
-            #test_logger.info('python-logstash: test extra fields', extra=logdata)
+            test_logger.info('python-logstash: test extra fields', extra=logdata)
             print("LOG SAVED")
